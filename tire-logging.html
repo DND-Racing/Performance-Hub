@@ -1134,6 +1134,72 @@ notesBox2 {
     setToday();
     loadStored();
     render();
+
+	  // ===== QR SCANNER =====
+let qrScannerInstance = null;
+let activeCorner = null;
+
+function scanTire(corner) {
+  activeCorner = corner;
+
+  const scannerUI = document.getElementById("qrScanner");
+  scannerUI.style.display = "flex";
+
+  qrScannerInstance = new Html5Qrcode("qrReader");
+
+  qrScannerInstance.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      stopScanner();
+      applyScannedTire(decodedText);
+    }
+  ).catch(err => {
+    alert("Camera failed. Must run on HTTPS (GitHub Pages recommended).");
+    console.error(err);
+  });
+}
+
+function stopScanner() {
+  if (qrScannerInstance) {
+    qrScannerInstance.stop().then(() => {
+      qrScannerInstance.clear();
+    }).catch(()=>{});
+  }
+  document.getElementById("qrScanner").style.display = "none";
+}
+
+// ===== APPLY SCANNED TIRE =====
+function applyScannedTire(tireID) {
+  if (!activeCorner) return;
+
+  // Fill serial field
+  document.getElementById(`${activeCorner}_serial`).value = tireID;
+
+  // Find most recent match (reverse search)
+  const match = [...entries].reverse().find(e => e.serial === tireID);
+
+  if (match) {
+    document.getElementById(`${activeCorner}_brand`).value = match.brand || '';
+    document.getElementById(`${activeCorner}_compound`).value = match.compound || '';
+
+    setStatus(`Loaded previous data for ${tireID}`);
+  } else {
+    setStatus(`New tire scanned: ${tireID}`);
+  }
+}
   </script>
+	<div id="qrScanner" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+  flex-direction:column;
+">
+  <div id="qrReader" style="width:300px;"></div>
+  <button class="btn2" style="margin-top:15px;" onclick="stopScanner()">Cancel</button>
 </body>
 </html>
