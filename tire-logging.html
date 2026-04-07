@@ -675,107 +675,138 @@ notesBox2 {
     </div>
 
     <section class="card" style="margin-top:14px;">
-      <div class="title">
-        <h2>Tire Entry</h2>
-        <span class="pill">LF / RF / LR / RR</span>
-      </div>
+  <div class="title">
+    <h2>Tire Entry</h2>
+    <span class="pill">LF / RF / LR / RR</span>
+  </div>
 
-      <div class="tire-grid">
-        <div class="corner-card">
-          <h3>Left Front</h3>
-          <div class="row cols3">
-            <div>
-              <label for="lf_brand">Brand</label>
-              <input id="lf_brand" type="text" placeholder="Hoosier" />
-            </div>
-            <div>
-              <label for="lf_compound">Compound</label>
-              <input id="lf_compound" type="text" placeholder="E2" />
-            </div>
-            <div>
-              <label for="lf_serial">Serial</label>
-              <input id="lf_serial" type="text" placeholder="LF-001" />
-            </div>
-          </div>
-          <div class="row cols4" style="margin-top:10px;">
-            <div><label for="lf_cold">Cold PSI</label><input id="lf_cold" type="number" step="0.1" /></div>
-            <div><label for="lf_hot">Hot PSI</label><input id="lf_hot" type="number" step="0.1" /></div>
-            <div><label for="lf_circ">Circ. (in)</label><input id="lf_circ" type="number" step="0.001" /></div>
-            <div><label for="lf_stagger">Stagger</label><input id="lf_stagger" type="number" step="0.001" /></div>
-          </div>
-          <div class="row cols3" style="margin-top:10px;">
-            <div><label for="lf_tread_i">Inner Temp</label><input id="lf_tread_i" type="number" step="0.1" /></div>
-            <div><label for="lf_tread_c">Center Temp</label><input id="lf_tread_c" type="number" step="0.1" /></div>
-            <div><label for="lf_tread_o">Outer Temp</label><input id="lf_tread_o" type="number" step="0.1" /></div>
-          </div>
+  <div class="tire-grid">
+
+    <!-- LF -->
+    <div class="corner-card">
+      <h3>Left Front</h3>
+      <div class="row cols3">
+        <div>
+          <label>Brand</label>
+          <input id="lf_brand" type="text" placeholder="Hoosier" />
         </div>
-
-        <div class="corner-card">
-          <h3>Right Front</h3>
-          <div class="row cols3">
-            <div><label for="rf_brand">Brand</label><input id="rf_brand" type="text" placeholder="Hoosier" /></div>
-            <div><label for="rf_compound">Compound</label><input id="rf_compound" type="text" placeholder="E2" /></div>
-            <div><label for="rf_serial">Serial</label><input id="rf_serial" type="text" placeholder="RF-001" /></div>
-          </div>
-          <div class="row cols4" style="margin-top:10px;">
-            <div><label for="rf_cold">Cold PSI</label><input id="rf_cold" type="number" step="0.1" /></div>
-            <div><label for="rf_hot">Hot PSI</label><input id="rf_hot" type="number" step="0.1" /></div>
-            <div><label for="rf_circ">Circ. (in)</label><input id="rf_circ" type="number" step="0.001" /></div>
-            <div><label for="rf_stagger">Stagger</label><input id="rf_stagger" type="number" step="0.001" /></div>
-          </div>
-          <div class="row cols3" style="margin-top:10px;">
-            <div><label for="rf_tread_i">Inner Temp</label><input id="rf_tread_i" type="number" step="0.1" /></div>
-            <div><label for="rf_tread_c">Center Temp</label><input id="rf_tread_c" type="number" step="0.1" /></div>
-            <div><label for="rf_tread_o">Outer Temp</label><input id="rf_tread_o" type="number" step="0.1" /></div>
-          </div>
+        <div>
+          <label>Compound</label>
+          <input id="lf_compound" type="text" placeholder="E2" />
         </div>
-
-        <div class="corner-card">
-          <h3>Left Rear</h3>
-          <div class="row cols3">
-            <div><label for="lr_brand">Brand</label><input id="lr_brand" type="text" placeholder="Hoosier" /></div>
-            <div><label for="lr_compound">Compound</label><input id="lr_compound" type="text" placeholder="E2" /></div>
-            <div><label for="lr_serial">Serial</label><input id="lr_serial" type="text" placeholder="LR-001" /></div>
-          </div>
-          <div class="row cols4" style="margin-top:10px;">
-            <div><label for="lr_cold">Cold PSI</label><input id="lr_cold" type="number" step="0.1" /></div>
-            <div><label for="lr_hot">Hot PSI</label><input id="lr_hot" type="number" step="0.1" /></div>
-            <div><label for="lr_circ">Circ. (in)</label><input id="lr_circ" type="number" step="0.001" /></div>
-            <div><label for="lr_stagger">Stagger</label><input id="lr_stagger" type="number" step="0.001" /></div>
-          </div>
-          <div class="row cols3" style="margin-top:10px;">
-            <div><label for="lr_tread_i">Inner Temp</label><input id="lr_tread_i" type="number" step="0.1" /></div>
-            <div><label for="lr_tread_c">Center Temp</label><input id="lr_tread_c" type="number" step="0.1" /></div>
-            <div><label for="lr_tread_o">Outer Temp</label><input id="lr_tread_o" type="number" step="0.1" /></div>
-          </div>
-        </div>
-
-        <div class="corner-card">
-          <h3>Right Rear</h3>
-          <div class="row cols3">
-            <div><label for="rr_brand">Brand</label><input id="rr_brand" type="text" placeholder="Hoosier" /></div>
-            <div><label for="rr_compound">Compound</label><input id="rr_compound" type="text" placeholder="E2" /></div>
-            <div><label for="rr_serial">Serial</label><input id="rr_serial" type="text" placeholder="RR-001" /></div>
-          </div>
-          <div class="row cols4" style="margin-top:10px;">
-            <div><label for="rr_cold">Cold PSI</label><input id="rr_cold" type="number" step="0.1" /></div>
-            <div><label for="rr_hot">Hot PSI</label><input id="rr_hot" type="number" step="0.1" /></div>
-            <div><label for="rr_circ">Circ. (in)</label><input id="rr_circ" type="number" step="0.001" /></div>
-            <div><label for="rr_stagger">Stagger</label><input id="rr_stagger" type="number" step="0.001" /></div>
-          </div>
-          <div class="row cols3" style="margin-top:10px;">
-            <div><label for="rr_tread_i">Inner Temp</label><input id="rr_tread_i" type="number" step="0.1" /></div>
-            <div><label for="rr_tread_c">Center Temp</label><input id="rr_tread_c" type="number" step="0.1" /></div>
-            <div><label for="rr_tread_o">Outer Temp</label><input id="rr_tread_o" type="number" step="0.1" /></div>
+        <div>
+          <label>Serial</label>
+          <div style="display:flex; gap:6px;">
+            <input id="lf_serial" type="text" placeholder="LF-001" />
+            <button class="btn3" type="button" onclick="scanTire('lf')">Scan</button>
           </div>
         </div>
       </div>
 
-      <div class="btnbar" style="margin-top:14px;">
-        <button class="btn2" type="button" id="clearBtn">Clear Form</button>
-        <button class="btn" type="button" id="addBtn">Add Session to Log</button>
+      <div class="row cols4" style="margin-top:10px;">
+        <div><label>Cold PSI</label><input id="lf_cold" type="number" step="0.1" /></div>
+        <div><label>Hot PSI</label><input id="lf_hot" type="number" step="0.1" /></div>
+        <div><label>Circ.</label><input id="lf_circ" type="number" step="0.001" /></div>
+        <div><label>Stagger</label><input id="lf_stagger" type="number" step="0.001" /></div>
       </div>
-    </section>
+
+      <div class="row cols3" style="margin-top:10px;">
+        <div><label>Inner</label><input id="lf_tread_i" type="number" /></div>
+        <div><label>Center</label><input id="lf_tread_c" type="number" /></div>
+        <div><label>Outer</label><input id="lf_tread_o" type="number" /></div>
+      </div>
+    </div>
+
+    <!-- RF -->
+    <div class="corner-card">
+      <h3>Right Front</h3>
+      <div class="row cols3">
+        <div><label>Brand</label><input id="rf_brand" type="text" /></div>
+        <div><label>Compound</label><input id="rf_compound" type="text" /></div>
+        <div>
+          <label>Serial</label>
+          <div style="display:flex; gap:6px;">
+            <input id="rf_serial" type="text" />
+            <button class="btn3" type="button" onclick="scanTire('rf')">Scan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row cols4" style="margin-top:10px;">
+        <div><label>Cold PSI</label><input id="rf_cold" type="number" /></div>
+        <div><label>Hot PSI</label><input id="rf_hot" type="number" /></div>
+        <div><label>Circ.</label><input id="rf_circ" type="number" /></div>
+        <div><label>Stagger</label><input id="rf_stagger" type="number" /></div>
+      </div>
+
+      <div class="row cols3" style="margin-top:10px;">
+        <div><label>Inner</label><input id="rf_tread_i" type="number" /></div>
+        <div><label>Center</label><input id="rf_tread_c" type="number" /></div>
+        <div><label>Outer</label><input id="rf_tread_o" type="number" /></div>
+      </div>
+    </div>
+
+    <!-- LR -->
+    <div class="corner-card">
+      <h3>Left Rear</h3>
+      <div class="row cols3">
+        <div><label>Brand</label><input id="lr_brand" type="text" /></div>
+        <div><label>Compound</label><input id="lr_compound" type="text" /></div>
+        <div>
+          <label>Serial</label>
+          <div style="display:flex; gap:6px;">
+            <input id="lr_serial" type="text" />
+            <button class="btn3" type="button" onclick="scanTire('lr')">Scan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row cols4" style="margin-top:10px;">
+        <div><label>Cold PSI</label><input id="lr_cold" type="number" /></div>
+        <div><label>Hot PSI</label><input id="lr_hot" type="number" /></div>
+        <div><label>Circ.</label><input id="lr_circ" type="number" /></div>
+        <div><label>Stagger</label><input id="lr_stagger" type="number" /></div>
+      </div>
+
+      <div class="row cols3" style="margin-top:10px;">
+        <div><label>Inner</label><input id="lr_tread_i" type="number" /></div>
+        <div><label>Center</label><input id="lr_tread_c" type="number" /></div>
+        <div><label>Outer</label><input id="lr_tread_o" type="number" /></div>
+      </div>
+    </div>
+
+    <!-- RR -->
+    <div class="corner-card">
+      <h3>Right Rear</h3>
+      <div class="row cols3">
+        <div><label>Brand</label><input id="rr_brand" type="text" /></div>
+        <div><label>Compound</label><input id="rr_compound" type="text" /></div>
+        <div>
+          <label>Serial</label>
+          <div style="display:flex; gap:6px;">
+            <input id="rr_serial" type="text" />
+            <button class="btn3" type="button" onclick="scanTire('rr')">Scan</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row cols4" style="margin-top:10px;">
+        <div><label>Cold PSI</label><input id="rr_cold" type="number" /></div>
+        <div><label>Hot PSI</label><input id="rr_hot" type="number" /></div>
+        <div><label>Circ.</label><input id="rr_circ" type="number" /></div>
+        <div><label>Stagger</label><input id="rr_stagger" type="number" /></div>
+      </div>
+
+      <div class="row cols3" style="margin-top:10px;">
+        <div><label>Inner</label><input id="rr_tread_i" type="number" /></div>
+        <div><label>Center</label><input id="rr_tread_c" type="number" /></div>
+        <div><label>Outer</label><input id="rr_tread_o" type="number" /></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
 
     <section class="card" style="margin-top:14px;">
       <div class="title">
