@@ -807,6 +807,83 @@ notesBox2 {
 
   </div>
 </section>
+	  <section class="card" style="margin-top:14px;">
+  <div class="title">
+    <h2>Pit Crew Mode</h2>
+    <span class="pill">Last Used Tire Info</span>
+  </div>
+
+  <div id="pitCrewEmpty" class="empty">Scan a tire to see its most recent PSI, temps, and notes.</div>
+
+  <div id="pitCrewCard" style="display:none;">
+    <div class="bigstats">
+      <div class="stat">
+        <div class="k">Tire ID</div>
+        <div class="v" id="pitSerial">-</div>
+      </div>
+      <div class="stat">
+        <div class="k">Last Corner</div>
+        <div class="v" id="pitCorner">-</div>
+      </div>
+      <div class="stat">
+        <div class="k">Last Session</div>
+        <div class="v" id="pitSession">-</div>
+      </div>
+      <div class="stat">
+        <div class="k">Last Date</div>
+        <div class="v" id="pitDate">-</div>
+      </div>
+    </div>
+
+    <div class="grid cols2" style="margin-top:12px;">
+      <div class="card">
+        <div class="title">
+          <h2>Pressure</h2>
+          <span class="pill">Most Recent</span>
+        </div>
+        <div class="bigstats">
+          <div class="stat">
+            <div class="k">Cold PSI</div>
+            <div class="v good" id="pitCold">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Hot PSI</div>
+            <div class="v warn" id="pitHot">-</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="title">
+          <h2>Tread Temps</h2>
+          <span class="pill">Inner / Center / Outer</span>
+        </div>
+        <div class="bigstats">
+          <div class="stat">
+            <div class="k">Inner</div>
+            <div class="v" id="pitInner">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Center</div>
+            <div class="v" id="pitCenter">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Outer</div>
+            <div class="v" id="pitOuter">-</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="title">
+        <h2>Last Session Notes</h2>
+        <span class="pill">Track Notes</span>
+      </div>
+      <div id="pitNotes" class="empty" style="text-align:left;">No notes saved for this tire.</div>
+    </div>
+  </div>
+</section>
 
 
     <section class="card" style="margin-top:14px;">
@@ -1016,13 +1093,15 @@ notesBox2 {
       .replace(/'/g, '&#39;');
   }
 
-  function clearForm() {
-    document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
-      if (el.id !== 'date') el.value = '';
-    });
-    $('session').selectedIndex = 0;
-    setToday();
-    setStatus('Form cleared.');
+function clearForm() {
+  document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
+    if (el.id !== 'date') el.value = '';
+  });
+  $('session').selectedIndex = 0;
+  setToday();
+  clearPitCrewInfo();
+  setStatus('Form cleared.');
+}
   }
 
   function toCSV(rows) {
@@ -1224,36 +1303,63 @@ notesBox2 {
     }
   }
 
-  function applyScannedTire(tireID) {
-    if (!activeCorner) return;
+ function applyScannedTire(tireID) {
+  if (!activeCorner) return;
 
-    const cleanID = String(tireID || '').trim();
-    document.getElementById(`${activeCorner}_serial`).value = cleanID;
+  // fill scanned serial into the selected corner
+  $(`${activeCorner}_serial`).value = tireID;
 
-    const match = [...entries].reverse().find(e => String(e.serial || '').trim() === cleanID);
+  // find most recent matching entry
+  const match = [...entries].reverse().find(e => e.serial === tireID);
 
-    if (match) {
-      document.getElementById(`${activeCorner}_brand`).value = match.brand || '';
-      document.getElementById(`${activeCorner}_compound`).value = match.compound || '';
-      setStatus(`Loaded previous data for ${cleanID}`);
-    } else {
-      setStatus(`New tire scanned: ${cleanID}`);
-    }
+  if (match) {
+    $(`${activeCorner}_brand`).value = match.brand || '';
+    $(`${activeCorner}_compound`).value = match.compound || '';
+
+    // optional: also fill the form with the last pressures/temps
+    $(`${activeCorner}_cold`).value = match.cold_psi || '';
+    $(`${activeCorner}_hot`).value = match.hot_psi || '';
+    $(`${activeCorner}_tread_i`).value = match.temp_inner || '';
+    $(`${activeCorner}_tread_c`).value = match.temp_center || '';
+    $(`${activeCorner}_tread_o`).value = match.temp_outer || '';
+
+    showPitCrewInfo(match);
+    setStatus(`Loaded pit crew data for ${tireID}`);
+  } else {
+    clearPitCrewInfo();
+    setStatus(`New tire scanned: ${tireID}`);
   }
-
-  $('addBtn').addEventListener('click', addSession);
-  $('clearBtn').addEventListener('click', clearForm);
-  $('saveCsvBtn').addEventListener('click', downloadCSV);
-  $('printBtn').addEventListener('click', () => window.print());
-  $('csvLoader').addEventListener('change', (e) => {
-    const file = e.target.files?.[0];
-    if (file) loadCSVFile(file);
-    e.target.value = '';
-  });
+}
 
   setToday();
   loadStored();
   render();
+	function showPitCrewInfo(row) {
+  $('pitCrewEmpty').style.display = 'none';
+  $('pitCrewCard').style.display = 'block';
+
+  $('pitSerial').textContent = row.serial || '-';
+  $('pitCorner').textContent = row.corner || '-';
+  $('pitSession').textContent = row.session || '-';
+  $('pitDate').textContent = row.date || '-';
+
+  $('pitCold').textContent = row.cold_psi !== '' ? row.cold_psi : '-';
+  $('pitHot').textContent = row.hot_psi !== '' ? row.hot_psi : '-';
+
+  $('pitInner').textContent = row.temp_inner !== '' ? row.temp_inner : '-';
+  $('pitCenter').textContent = row.temp_center !== '' ? row.temp_center : '-';
+  $('pitOuter').textContent = row.temp_outer !== '' ? row.temp_outer : '-';
+
+  $('pitNotes').textContent = row.notes && row.notes.trim()
+    ? row.notes
+    : 'No notes saved for this tire.';
+}
+
+function clearPitCrewInfo() {
+  $('pitCrewEmpty').style.display = 'block';
+  $('pitCrewCard').style.display = 'none';
+}
+	clearPitCrewInfo();
 </script>
 	<div id="qrScanner" style="
   display:none;
