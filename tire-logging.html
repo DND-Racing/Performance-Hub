@@ -12,7 +12,6 @@
       --text:#f3f3f7;
       --muted:#b9b9c9;
       --pink:#ff2ea6;
-      --pink2:#ff5cc1;
       --line:#2a2a3b;
       --good:#2effa6;
       --warn:#ffd84d;
@@ -45,7 +44,7 @@
       backdrop-filter: blur(10px);
     }
 
-    .brand{display:flex;align-items:center;gap:12px;}
+    .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
     .logo{
       width:46px;
@@ -62,7 +61,13 @@
 
     h1{font-size:18px;margin:0;letter-spacing:.5px;}
     .sub{color:var(--muted);font-size:12px;margin-top:2px;}
-    .wrap{max-width:1280px;margin:0 auto;padding:16px;}
+
+    .wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:16px;
+    }
+
     .grid{display:grid;gap:14px;}
     .grid.cols2{grid-template-columns:1.2fr .8fr;}
     .grid.cols3{grid-template-columns:repeat(3,1fr);}
@@ -74,6 +79,7 @@
 
     @media(max-width:1100px){
       .grid.cols2,.grid.cols3,.grid.cols4,.row.cols2,.row.cols3,.row.cols4{grid-template-columns:1fr;}
+      header{flex-direction:column;align-items:flex-start;}
     }
 
     .card{
@@ -90,6 +96,7 @@
       justify-content:space-between;
       gap:10px;
       margin-bottom:12px;
+      flex-wrap:wrap;
     }
 
     .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
@@ -172,7 +179,7 @@
     }
 
     .stat .k{font-size:12px;color:var(--muted);}
-    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;word-break:break-word;}
     .v.good{color:var(--good);}
     .v.warn{color:var(--warn);}
 
@@ -242,9 +249,16 @@
       background:rgba(255,46,166,.08);
     }
 
+    .serial-scan{
+      display:flex;
+      gap:6px;
+      align-items:stretch;
+    }
+    .serial-scan input{flex:1;}
+
     @media print {
       body{background:#fff !important;color:#000 !important;}
-      header,.btnbar,.status,#csvLoader{display:none !important;}
+      header,.btnbar,.status,#csvLoader,#qrScanner{display:none !important;}
       .wrap{max-width:100%;padding:0;}
       .card,.corner-card,.stat,.table-wrap{background:#fff !important;color:#000 !important;box-shadow:none !important;border:1px solid #ccc !important;}
       input,select,textarea{border:none !important;background:transparent !important;color:#000 !important;padding:3px 0 !important;}
@@ -254,340 +268,25 @@
       .v,.v.good,.v.warn{color:#000 !important;}
       @page { size: letter portrait; margin: 0.4in; }
     }
-	btn{
-      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
-      color:#140012;
-      box-shadow:0 12px 26px rgba(255,46,166,.25);
-    }
-    .btn2{
-      background:transparent;
-      border:1px solid rgba(255,46,166,.55);
-      color:var(--text);
-    }
-    .status{font-size:13px;color:var(--muted);margin-top:10px;}
-    .bigstats{
-      display:flex;gap:10px;flex-wrap:wrap;
-      margin-top:8px;
-    }
-	.btn3{
-      background:transparent;
-      border:1px solid rgba(255,46,166,.55);
-      color:var(--text);
-    }
-	header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
-      border-bottom:1px solid var(--line);
-      padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .brand{display:flex; align-items:center; gap:12px;}
-    .logo{
-  width:44px;
-  height:44px;
-  border-radius:12px;
-
-  background-image: url("logo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
-}
-background:
-    linear-gradient(
-      rgba(8,8,14,0.85),
-      rgba(8,8,14,0.92)
-    ),
-    url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-    :root{
-      --bg:#0b0b10;
-      --panel:#141422;
-      --panel2:#10101a;
-      --text:#f3f3f7;
-      --muted:#b9b9c9;
-      --pink:#ff2ea6;
-      --pink2:#ff5cc1;
-      --line:#2a2a3b;
-      --good:#2effa6;
-    }
-    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
-   body{
-  margin:0;
-  color:var(--text);
-
-  background:
-    linear-gradient(
-      rgba(8,8,14,0.85),
-      rgba(8,8,14,0.92)
-    ),
-    url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
-
-    header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
-      border-bottom:1px solid var(--line);
-      padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .brand{display:flex; align-items:center; gap:12px;}
-    .logo{
-  width:44px;
-  height:44px;
-  border-radius:12px;
-
-  background-image: url("logo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
-}
-    h1{font-size:18px;margin:0;letter-spacing:.5px;}
-    .sub{color:var(--muted);font-size:12px;margin-top:2px;}
-    .wrap{max-width:1200px;margin:0 auto;padding:16px;}
-    .grid{display:grid;gap:14px;}
-    @media(min-width:980px){ .grid.cols2{grid-template-columns:1fr 1fr;} }
-    @media(min-width:980px){ .grid.cols3{grid-template-columns:1.2fr .8fr .8fr;} }
-    .card{
-      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:14px;
-      box-shadow:0 10px 30px rgba(0,0,0,.35);
-    }
-    .title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
-    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
-    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px;}
-    .row{display:grid;gap:10px;}
-    @media(min-width:640px){ .row.cols4{grid-template-columns:repeat(4,1fr);} }
-    @media(min-width:640px){ .row.cols2{grid-template-columns:repeat(2,1fr);} }
-
-    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
-    input, select, textarea{
-      width:100%;
-      background:var(--panel2);
-      border:1px solid var(--line);
-      color:var(--text);
-      border-radius:12px;
-      padding:12px 12px;
-      font-size:16px;
-      outline:none;
-    }
-    textarea{min-height:46px; resize:vertical;}
-    input:focus, select:focus, textarea:focus{border-color:rgba(255,46,166,.7); box-shadow:0 0 0 4px rgba(255,46,166,.15);}
-    .corner{
-      border:1px dashed rgba(255,46,166,.35);
-      border-radius:16px;
-      padding:12px;
-      background:rgba(255,46,166,.04);
-    }
-    .corner h3{margin:0 0 10px 0;font-size:14px; letter-spacing:.4px;}
-    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
-    button{
-      border:none; cursor:pointer;
-      border-radius:14px;
-      padding:14px 16px;
-      font-size:15px;
-      font-weight:700;
-      letter-spacing:.4px;
-    }
-    .btn{
-      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
-      color:#140012;
-      box-shadow:0 12px 26px rgba(255,46,166,.25);
-    }
-    .btn2{
-      background:transparent;
-      border:1px solid rgba(255,46,166,.55);
-      color:var(--text);
-    }
-    .status{font-size:13px;color:var(--muted);margin-top:10px;}
-    .bigstats{
-      display:flex;gap:10px;flex-wrap:wrap;
-      margin-top:8px;
-    }
-	.btn3{
-      background:transparent;
-      border:1px solid rgba(255,46,166,.55);
-      color:var(--text);
-    }
-    .status{font-size:13px;color:var(--muted);margin-top:10px;}
-    .bigstats{
-      display:flex;gap:10px;flex-wrap:wrap;
-      margin-top:8px;
-    }
-    .stat{
-      flex:1;
-      min-width:180px;
-      background:rgba(255,255,255,.03);
-      border:1px solid var(--line);
-      border-radius:14px;
-      padding:12px;
-    }
-    .stat .k{font-size:12px;color:var(--muted);}
-    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
-    .v.good{color:var(--good);}
-
- .car-map{
-  display:grid;
-  grid-template-columns: 1fr 1.2fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 12px;
-  align-items: stretch;
-
-  grid-template-areas:
-    "lf car rf"
-    "lr car rr";
-}
-
-.car-center{
-  grid-area: car;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  border:1px solid rgba(255,46,166,.25);
-  border-radius:16px;
-  background: rgba(0,0,0,.20);
-  min-height: 420px;
-  position: relative;
-}
-
-.car-center img{
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  opacity: 0.95;
-}
-
-.corner-card{
-  border:1px dashed rgba(255,46,166,.35);
-  border-radius:16px;
-  padding:12px;
-  background: rgba(255,46,166,.04);
-}
-
-.corner-card h3{
-  margin:0 0 10px 0;
-  font-size:14px;
-  letter-spacing:.6px;
-}
-
-.corner-card.lf{ grid-area: lf; }
-.corner-card.rf{ grid-area: rf; }
-.corner-card.lr{ grid-area: lr; }
-.corner-card.rr{ grid-area: rr; }
-
-body{ overflow: hidden; }
-
-.wrap{
-	max-width:1200px;
-	margin:0 auto;
-	padding:16px;
-	padding-right: calc(100vw-1200px)/2 + 10px);
-	margin-right: calc(-1*((100vw-1200px)/2 + 10px));
-	
-	height: calc(100vh - 78px);
-	overflow-y: scroll;
-	overflow-x: hidden;
-}
-
-.wrap::-webkit-scrollbar{ width: 18px; }
-.wrap::-webkit-scrollbar-track{ 
-	background: #080808e; 
-}
-.wrap::-webkit-scrollbar-thumb{
-	background: #ff5cc1;
-	border-radius:10px;
-	border:2px solid #08080e;
-}
-.wrap::-webkit-scrollbar-thumb:hover{
-	background: #ff5cc1; 
-}
-.notesBox {
-    width: 600px;
-    height: 150px;
-    background: #080808e;
-    color: white;
-    border: 1px solid #2a2a3b;
-    padding: 10px;
-    resize: none;
-}
-
-/* Chrome, Edge, Safari */
-.notesBox::-webkit-scrollbar {
-    width: 12px;
-}
-
-.notesBox::-webkit-scrollbar-track {
-    background: #08080e;
-}
-
-.notesBox::-webkit-scrollbar-thumb {
-    background: #ff5cc1;
-    border-radius: 6px;
-}
-
-.notesBox::-webkit-scrollbar-thumb:hover {
-    background: #ff5cc1;
-}
-
-notesBox2 {
-    width: 1200px;
-    height: 150px;
-    background: #080808e;
-    color: white;
-    border: 1px solid #2a2a3b;
-    padding: 10px;
-    resize: none;
-}
-
-/* Chrome, Edge, Safari */
-.notesBox2::-webkit-scrollbar {
-    width: 12px;
-}
-
-.notesBox2::-webkit-scrollbar-track {
-    background: #08080e;
-}
-
-.notesBox2::-webkit-scrollbar-thumb {
-    background: #ff5cc1;
-    border-radius: 6px;
-}
-
-.notesBox2::-webkit-scrollbar-thumb:hover {
-    background: #ff5cc1;
-}
-
   </style>
-	<script src="https://unpkg.com/html5-qrcode"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-<header>
-  <div class="brand">
-    <div class="logo"></div>
-    <div>
-      <h1>Tire Logging</h1>
+  <header>
+    <div class="brand">
+      <div class="logo">DND</div>
+      <div>
+        <h1>Tire Logging</h1>
+        <div class="sub">QR scan + pit crew lookup + CSV save/load</div>
+      </div>
     </div>
-  </div>
- <div class="btnbar">
-  <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
-  <button class="btn2" onclick="openCSVPicker()">Load Notes</button>
-  <button class="btn3" onclick="window.location.href='index.html'">Return Home</button>
-</div>
-</header>
+
+    <div class="btnbar">
+      <input id="csvLoader" type="file" accept=".csv" hidden />
+      <button class="btn2" type="button" onclick="openCSVPicker()">Load CSV</button>
+      <button class="btn3" type="button" onclick="window.location.href='index.html'">Return Home</button>
+    </div>
+  </header>
 
   <div class="wrap">
     <div class="grid cols2">
@@ -653,6 +352,7 @@ notesBox2 {
           <h2>Quick Stats</h2>
           <span class="pill">Auto Calculated</span>
         </div>
+
         <div class="bigstats">
           <div class="stat">
             <div class="k">Entries Logged</div>
@@ -671,222 +371,233 @@ notesBox2 {
             <div class="v" id="statGrowth">0.000</div>
           </div>
         </div>
+
         <div class="status" id="status">Ready to log tire data.</div>
       </section>
     </div>
 
     <section class="card" style="margin-top:14px;">
-  <div class="title">
-    <h2>Tire Entry</h2>
-    <span class="pill">LF / RF / LR / RR</span>
-  </div>
-
-  <div class="tire-grid">
-
-    <!-- LF -->
-    <div class="corner-card">
-      <h3>Left Front</h3>
-      <div class="row cols3">
-        <div>
-          <label>Brand</label>
-          <input id="lf_brand" type="text" placeholder="Hoosier" />
-        </div>
-        <div>
-          <label>Compound</label>
-          <input id="lf_compound" type="text" placeholder="E2" />
-        </div>
-        <div>
-          <label>Serial</label>
-          <div style="display:flex; gap:6px;">
-            <input id="lf_serial" type="text" placeholder="LF-001" />
-            <button class="btn3" type="button" onclick="scanTire('lf')">Scan</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row cols4" style="margin-top:10px;">
-        <div><label>Cold PSI</label><input id="lf_cold" type="number" step="0.1" /></div>
-        <div><label>Hot PSI</label><input id="lf_hot" type="number" step="0.1" /></div>
-        <div><label>Circ.</label><input id="lf_circ" type="number" step="0.001" /></div>
-        <div><label>Stagger</label><input id="lf_stagger" type="number" step="0.001" /></div>
-      </div>
-
-      <div class="row cols3" style="margin-top:10px;">
-        <div><label>Inner</label><input id="lf_tread_i" type="number" /></div>
-        <div><label>Center</label><input id="lf_tread_c" type="number" /></div>
-        <div><label>Outer</label><input id="lf_tread_o" type="number" /></div>
-      </div>
-    </div>
-
-    <!-- RF -->
-    <div class="corner-card">
-      <h3>Right Front</h3>
-      <div class="row cols3">
-        <div><label>Brand</label><input id="rf_brand" type="text" /></div>
-        <div><label>Compound</label><input id="rf_compound" type="text" /></div>
-        <div>
-          <label>Serial</label>
-          <div style="display:flex; gap:6px;">
-            <input id="rf_serial" type="text" />
-            <button class="btn3" type="button" onclick="scanTire('rf')">Scan</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row cols4" style="margin-top:10px;">
-        <div><label>Cold PSI</label><input id="rf_cold" type="number" /></div>
-        <div><label>Hot PSI</label><input id="rf_hot" type="number" /></div>
-        <div><label>Circ.</label><input id="rf_circ" type="number" /></div>
-        <div><label>Stagger</label><input id="rf_stagger" type="number" /></div>
-      </div>
-
-      <div class="row cols3" style="margin-top:10px;">
-        <div><label>Inner</label><input id="rf_tread_i" type="number" /></div>
-        <div><label>Center</label><input id="rf_tread_c" type="number" /></div>
-        <div><label>Outer</label><input id="rf_tread_o" type="number" /></div>
-      </div>
-    </div>
-
-    <!-- LR -->
-    <div class="corner-card">
-      <h3>Left Rear</h3>
-      <div class="row cols3">
-        <div><label>Brand</label><input id="lr_brand" type="text" /></div>
-        <div><label>Compound</label><input id="lr_compound" type="text" /></div>
-        <div>
-          <label>Serial</label>
-          <div style="display:flex; gap:6px;">
-            <input id="lr_serial" type="text" />
-            <button class="btn3" type="button" onclick="scanTire('lr')">Scan</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row cols4" style="margin-top:10px;">
-        <div><label>Cold PSI</label><input id="lr_cold" type="number" /></div>
-        <div><label>Hot PSI</label><input id="lr_hot" type="number" /></div>
-        <div><label>Circ.</label><input id="lr_circ" type="number" /></div>
-        <div><label>Stagger</label><input id="lr_stagger" type="number" /></div>
-      </div>
-
-      <div class="row cols3" style="margin-top:10px;">
-        <div><label>Inner</label><input id="lr_tread_i" type="number" /></div>
-        <div><label>Center</label><input id="lr_tread_c" type="number" /></div>
-        <div><label>Outer</label><input id="lr_tread_o" type="number" /></div>
-      </div>
-    </div>
-
-    <!-- RR -->
-    <div class="corner-card">
-      <h3>Right Rear</h3>
-      <div class="row cols3">
-        <div><label>Brand</label><input id="rr_brand" type="text" /></div>
-        <div><label>Compound</label><input id="rr_compound" type="text" /></div>
-        <div>
-          <label>Serial</label>
-          <div style="display:flex; gap:6px;">
-            <input id="rr_serial" type="text" />
-            <button class="btn3" type="button" onclick="scanTire('rr')">Scan</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="row cols4" style="margin-top:10px;">
-        <div><label>Cold PSI</label><input id="rr_cold" type="number" /></div>
-        <div><label>Hot PSI</label><input id="rr_hot" type="number" /></div>
-        <div><label>Circ.</label><input id="rr_circ" type="number" /></div>
-        <div><label>Stagger</label><input id="rr_stagger" type="number" /></div>
-      </div>
-
-      <div class="row cols3" style="margin-top:10px;">
-        <div><label>Inner</label><input id="rr_tread_i" type="number" /></div>
-        <div><label>Center</label><input id="rr_tread_c" type="number" /></div>
-        <div><label>Outer</label><input id="rr_tread_o" type="number" /></div>
-      </div>
-    </div>
-
-  </div>
-</section>
-	 <div class="title">
-  <h2>Pit Crew Mode</h2>
-  <div style="display:flex; gap:10px; align-items:center;">
-    <span class="pill">Last Used Tire Info</span>
-    <button class="btn3" type="button" onclick="scanPitCrewTire()">Scan Tire</button>
-  </div>
-</div>
-
-  <div id="pitCrewEmpty" class="empty">Scan a tire to see its most recent PSI, temps, and notes.</div>
-
-  <div id="pitCrewCard" style="display:none;">
-    <div class="bigstats">
-      <div class="stat">
-        <div class="k">Tire ID</div>
-        <div class="v" id="pitSerial">-</div>
-      </div>
-      <div class="stat">
-        <div class="k">Last Corner</div>
-        <div class="v" id="pitCorner">-</div>
-      </div>
-      <div class="stat">
-        <div class="k">Last Session</div>
-        <div class="v" id="pitSession">-</div>
-      </div>
-      <div class="stat">
-        <div class="k">Last Date</div>
-        <div class="v" id="pitDate">-</div>
-      </div>
-    </div>
-
-    <div class="grid cols2" style="margin-top:12px;">
-      <div class="card">
-        <div class="title">
-          <h2>Pressure</h2>
-          <span class="pill">Most Recent</span>
-        </div>
-        <div class="bigstats">
-          <div class="stat">
-            <div class="k">Cold PSI</div>
-            <div class="v good" id="pitCold">-</div>
-          </div>
-          <div class="stat">
-            <div class="k">Hot PSI</div>
-            <div class="v warn" id="pitHot">-</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="title">
-          <h2>Tread Temps</h2>
-          <span class="pill">Inner / Center / Outer</span>
-        </div>
-        <div class="bigstats">
-          <div class="stat">
-            <div class="k">Inner</div>
-            <div class="v" id="pitInner">-</div>
-          </div>
-          <div class="stat">
-            <div class="k">Center</div>
-            <div class="v" id="pitCenter">-</div>
-          </div>
-          <div class="stat">
-            <div class="k">Outer</div>
-            <div class="v" id="pitOuter">-</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:12px;">
       <div class="title">
-        <h2>Last Session Notes</h2>
-        <span class="pill">Track Notes</span>
+        <h2>Tire Entry</h2>
+        <span class="pill">LF / RF / LR / RR</span>
       </div>
-      <div id="pitNotes" class="empty" style="text-align:left;">No notes saved for this tire.</div>
-    </div>
-  </div>
-</section>
 
+      <div class="tire-grid">
+        <div class="corner-card">
+          <h3>Left Front</h3>
+          <div class="row cols3">
+            <div>
+              <label for="lf_brand">Brand</label>
+              <input id="lf_brand" type="text" placeholder="Hoosier" />
+            </div>
+            <div>
+              <label for="lf_compound">Compound</label>
+              <input id="lf_compound" type="text" placeholder="E2" />
+            </div>
+            <div>
+              <label for="lf_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="lf_serial" type="text" placeholder="LF-001" />
+                <button class="btn3" type="button" onclick="scanTire('lf')">Scan</button>
+              </div>
+            </div>
+          </div>
+          <div class="row cols4" style="margin-top:10px;">
+            <div><label for="lf_cold">Cold PSI</label><input id="lf_cold" type="number" step="0.1" /></div>
+            <div><label for="lf_hot">Hot PSI</label><input id="lf_hot" type="number" step="0.1" /></div>
+            <div><label for="lf_circ">Circ.</label><input id="lf_circ" type="number" step="0.001" /></div>
+            <div><label for="lf_stagger">Stagger</label><input id="lf_stagger" type="number" step="0.001" /></div>
+          </div>
+          <div class="row cols3" style="margin-top:10px;">
+            <div><label for="lf_tread_i">Inner</label><input id="lf_tread_i" type="number" step="0.1" /></div>
+            <div><label for="lf_tread_c">Center</label><input id="lf_tread_c" type="number" step="0.1" /></div>
+            <div><label for="lf_tread_o">Outer</label><input id="lf_tread_o" type="number" step="0.1" /></div>
+          </div>
+        </div>
+
+        <div class="corner-card">
+          <h3>Right Front</h3>
+          <div class="row cols3">
+            <div>
+              <label for="rf_brand">Brand</label>
+              <input id="rf_brand" type="text" placeholder="Hoosier" />
+            </div>
+            <div>
+              <label for="rf_compound">Compound</label>
+              <input id="rf_compound" type="text" placeholder="E2" />
+            </div>
+            <div>
+              <label for="rf_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="rf_serial" type="text" placeholder="RF-001" />
+                <button class="btn3" type="button" onclick="scanTire('rf')">Scan</button>
+              </div>
+            </div>
+          </div>
+          <div class="row cols4" style="margin-top:10px;">
+            <div><label for="rf_cold">Cold PSI</label><input id="rf_cold" type="number" step="0.1" /></div>
+            <div><label for="rf_hot">Hot PSI</label><input id="rf_hot" type="number" step="0.1" /></div>
+            <div><label for="rf_circ">Circ.</label><input id="rf_circ" type="number" step="0.001" /></div>
+            <div><label for="rf_stagger">Stagger</label><input id="rf_stagger" type="number" step="0.001" /></div>
+          </div>
+          <div class="row cols3" style="margin-top:10px;">
+            <div><label for="rf_tread_i">Inner</label><input id="rf_tread_i" type="number" step="0.1" /></div>
+            <div><label for="rf_tread_c">Center</label><input id="rf_tread_c" type="number" step="0.1" /></div>
+            <div><label for="rf_tread_o">Outer</label><input id="rf_tread_o" type="number" step="0.1" /></div>
+          </div>
+        </div>
+
+        <div class="corner-card">
+          <h3>Left Rear</h3>
+          <div class="row cols3">
+            <div>
+              <label for="lr_brand">Brand</label>
+              <input id="lr_brand" type="text" placeholder="Hoosier" />
+            </div>
+            <div>
+              <label for="lr_compound">Compound</label>
+              <input id="lr_compound" type="text" placeholder="E2" />
+            </div>
+            <div>
+              <label for="lr_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="lr_serial" type="text" placeholder="LR-001" />
+                <button class="btn3" type="button" onclick="scanTire('lr')">Scan</button>
+              </div>
+            </div>
+          </div>
+          <div class="row cols4" style="margin-top:10px;">
+            <div><label for="lr_cold">Cold PSI</label><input id="lr_cold" type="number" step="0.1" /></div>
+            <div><label for="lr_hot">Hot PSI</label><input id="lr_hot" type="number" step="0.1" /></div>
+            <div><label for="lr_circ">Circ.</label><input id="lr_circ" type="number" step="0.001" /></div>
+            <div><label for="lr_stagger">Stagger</label><input id="lr_stagger" type="number" step="0.001" /></div>
+          </div>
+          <div class="row cols3" style="margin-top:10px;">
+            <div><label for="lr_tread_i">Inner</label><input id="lr_tread_i" type="number" step="0.1" /></div>
+            <div><label for="lr_tread_c">Center</label><input id="lr_tread_c" type="number" step="0.1" /></div>
+            <div><label for="lr_tread_o">Outer</label><input id="lr_tread_o" type="number" step="0.1" /></div>
+          </div>
+        </div>
+
+        <div class="corner-card">
+          <h3>Right Rear</h3>
+          <div class="row cols3">
+            <div>
+              <label for="rr_brand">Brand</label>
+              <input id="rr_brand" type="text" placeholder="Hoosier" />
+            </div>
+            <div>
+              <label for="rr_compound">Compound</label>
+              <input id="rr_compound" type="text" placeholder="E2" />
+            </div>
+            <div>
+              <label for="rr_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="rr_serial" type="text" placeholder="RR-001" />
+                <button class="btn3" type="button" onclick="scanTire('rr')">Scan</button>
+              </div>
+            </div>
+          </div>
+          <div class="row cols4" style="margin-top:10px;">
+            <div><label for="rr_cold">Cold PSI</label><input id="rr_cold" type="number" step="0.1" /></div>
+            <div><label for="rr_hot">Hot PSI</label><input id="rr_hot" type="number" step="0.1" /></div>
+            <div><label for="rr_circ">Circ.</label><input id="rr_circ" type="number" step="0.001" /></div>
+            <div><label for="rr_stagger">Stagger</label><input id="rr_stagger" type="number" step="0.001" /></div>
+          </div>
+          <div class="row cols3" style="margin-top:10px;">
+            <div><label for="rr_tread_i">Inner</label><input id="rr_tread_i" type="number" step="0.1" /></div>
+            <div><label for="rr_tread_c">Center</label><input id="rr_tread_c" type="number" step="0.1" /></div>
+            <div><label for="rr_tread_o">Outer</label><input id="rr_tread_o" type="number" step="0.1" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="btnbar" style="margin-top:14px;">
+        <button class="btn2" type="button" id="clearBtn">Clear Form</button>
+        <button class="btn" type="button" id="addBtn">Add Session to Log</button>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Pit Crew Mode</h2>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <span class="pill">Last Used Tire Info</span>
+          <button class="btn3" type="button" onclick="scanPitCrewTire()">Scan Tire</button>
+        </div>
+      </div>
+
+      <div id="pitCrewEmpty" class="empty">Scan a tire to see its most recent PSI, temps, and notes.</div>
+
+      <div id="pitCrewCard" style="display:none;">
+        <div class="bigstats">
+          <div class="stat">
+            <div class="k">Tire ID</div>
+            <div class="v" id="pitSerial">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Corner</div>
+            <div class="v" id="pitCorner">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Session</div>
+            <div class="v" id="pitSession">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Date</div>
+            <div class="v" id="pitDate">-</div>
+          </div>
+        </div>
+
+        <div class="grid cols2" style="margin-top:12px;">
+          <div class="card">
+            <div class="title">
+              <h2>Pressure</h2>
+              <span class="pill">Most Recent</span>
+            </div>
+            <div class="bigstats">
+              <div class="stat">
+                <div class="k">Cold PSI</div>
+                <div class="v good" id="pitCold">-</div>
+              </div>
+              <div class="stat">
+                <div class="k">Hot PSI</div>
+                <div class="v warn" id="pitHot">-</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="title">
+              <h2>Tread Temps</h2>
+              <span class="pill">Inner / Center / Outer</span>
+            </div>
+            <div class="bigstats">
+              <div class="stat">
+                <div class="k">Inner</div>
+                <div class="v" id="pitInner">-</div>
+              </div>
+              <div class="stat">
+                <div class="k">Center</div>
+                <div class="v" id="pitCenter">-</div>
+              </div>
+              <div class="stat">
+                <div class="k">Outer</div>
+                <div class="v" id="pitOuter">-</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="title">
+            <h2>Last Session Notes</h2>
+            <span class="pill">Track Notes</span>
+          </div>
+          <div id="pitNotes" class="empty" style="text-align:left;">No notes saved for this tire.</div>
+        </div>
+      </div>
+    </section>
 
     <section class="card" style="margin-top:14px;">
       <div class="title">
@@ -894,13 +605,14 @@ notesBox2 {
         <span class="pill">Browser Memory + CSV</span>
       </div>
 
-      <div class="btnbar" style="margin-bottom:10px;">
-  <button class="btn" onclick="addSession()">Add to Log</button>
-  <button class="btn2" onclick="clearForm()">Clear</button>
-  <button class="btn2" onclick="downloadCSV()">Save CSV</button>
-</div>
+      <div class="btnbar" style="justify-content:flex-start; margin-bottom:12px;">
+        <button class="btn3" type="button" id="saveCsvBtn">Save CSV</button>
+        <button class="btn2" type="button" id="printBtn">Print View</button>
+        <label class="btn2" for="csvLoader" style="display:inline-flex;align-items:center;justify-content:center;padding:14px 16px;cursor:pointer;">Load CSV</label>
+      </div>
 
       <div id="logEmpty" class="empty">No tire data logged yet.</div>
+
       <div id="tableWrap" class="table-wrap" style="display:none;">
         <table>
           <thead>
@@ -925,496 +637,591 @@ notesBox2 {
     </section>
   </div>
 
-<script>
-  const $ = (id) => document.getElementById(id);
-  const storageKey = 'dnd_tire_logger_entries';
+  <div id="qrScanner" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:20px;
+  ">
+    <div id="qrReader" style="width:min(90vw, 340px);"></div>
+    <button class="btn2" style="margin-top:15px;" type="button" onclick="stopScanner()">Cancel</button>
+  </div>
 
-  const corners = ['lf','rf','lr','rr'];
-  const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const storageKey = 'dnd_tire_logger_entries';
+    const corners = ['lf','rf','lr','rr'];
+    const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
 
-  let entries = [];
+    let entries = [];
+    let qrScannerInstance = null;
+    let activeCorner = null;
+    let scanMode = null;
+    let scannerStarting = false;
 
-  function setToday() {
-    const today = new Date();
-    const y = today.getFullYear();
-    const m = String(today.getMonth() + 1).padStart(2, '0');
-    const d = String(today.getDate()).padStart(2, '0');
-    $('date').value = `${y}-${m}-${d}`;
-  }
-
-  function num(v) {
-    const n = parseFloat(v);
-    return Number.isFinite(n) ? n : '';
-  }
-
-  function fmt(v, digits = 1) {
-    return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
-  }
-
-  function readSessionHeader() {
-    return {
-      date: $('date').value,
-      track: $('track').value.trim(),
-      event: $('event').value.trim(),
-      session: $('session').value,
-      car: $('car').value.trim(),
-      driver: $('driver').value.trim(),
-      track_temp: num($('airTrack').value),
-      air_temp: num($('airAmbient').value),
-      notes: $('sessionNotes').value.trim()
-    };
-  }
-
-  function readCorner(corner) {
-    return {
-      corner: cornerNames[corner],
-      brand: $(`${corner}_brand`).value.trim(),
-      compound: $(`${corner}_compound`).value.trim(),
-      serial: $(`${corner}_serial`).value.trim(),
-      cold_psi: num($(`${corner}_cold`).value),
-      hot_psi: num($(`${corner}_hot`).value),
-      circumference: num($(`${corner}_circ`).value),
-      stagger: num($(`${corner}_stagger`).value),
-      temp_inner: num($(`${corner}_tread_i`).value),
-      temp_center: num($(`${corner}_tread_c`).value),
-      temp_outer: num($(`${corner}_tread_o`).value)
-    };
-  }
-
-  function hasCornerData(cornerData) {
-    return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
-  }
-
-  function addSession() {
-  const header = readSessionHeader();
-  const newRows = [];
-
-  for (const c of corners) {
-    const cornerData = readCorner(c);
-    if (hasCornerData(cornerData)) {
-      newRows.push({ ...header, ...cornerData });
-    }
-  }
-
-  if (!newRows.length) {
-    setStatus('Enter data in at least one tire corner before adding.', true);
-    return;
-  }
-
-  entries = [...entries, ...newRows];
-  persist();
-  render();
-  setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
-}
-
-  function setStatus(message, isWarn = false) {
-    const el = $('status');
-    el.textContent = message;
-    el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
-  }
-
-  function persist() {
-    localStorage.setItem(storageKey, JSON.stringify(entries));
-  }
-
-  function loadStored() {
-    try {
-      const raw = localStorage.getItem(storageKey);
-      entries = raw ? JSON.parse(raw) : [];
-    } catch {
-      entries = [];
-    }
-  }
-
-  function updateStats() {
-    $('statCount').textContent = String(entries.length);
-
-    const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
-    const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
-    const growthVals = entries
-      .map(r => {
-        const hot = Number(r.hot_psi);
-        const cold = Number(r.cold_psi);
-        return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
-      })
-      .filter(Number.isFinite);
-
-    const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
-    $('statCold').textContent = fmt(avg(coldVals), 1);
-    $('statHot').textContent = fmt(avg(hotVals), 1);
-    $('statGrowth').textContent = fmt(avg(growthVals), 3);
-  }
-
-  function render() {
-    const tbody = $('logBody');
-    tbody.innerHTML = '';
-
-    if (!entries.length) {
-      $('logEmpty').style.display = 'block';
-      $('tableWrap').style.display = 'none';
-      updateStats();
-      return;
+    function setToday() {
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = String(today.getMonth() + 1).padStart(2, '0');
+      const d = String(today.getDate()).padStart(2, '0');
+      $('date').value = `${y}-${m}-${d}`;
     }
 
-    $('logEmpty').style.display = 'none';
-    $('tableWrap').style.display = 'block';
-
-    for (const row of entries) {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${escapeHtml(row.date || '')}</td>
-        <td>${escapeHtml(row.track || '')}</td>
-        <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
-        <td>${escapeHtml(row.corner || '')}</td>
-        <td>${escapeHtml(row.brand || '')}</td>
-        <td>${escapeHtml(row.compound || '')}</td>
-        <td>${safeVal(row.cold_psi)}</td>
-        <td>${safeVal(row.hot_psi)}</td>
-        <td>${safeVal(row.circumference)}</td>
-        <td>${safeVal(row.stagger)}</td>
-        <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
-        <td>${escapeHtml(row.serial || '')}</td>
-      `;
-      tbody.appendChild(tr);
+    function num(v) {
+      if (v === '' || v === null || v === undefined) return '';
+      const n = parseFloat(v);
+      return Number.isFinite(n) ? n : '';
     }
 
-    updateStats();
-  }
-
-  function safeVal(value) {
-    return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
-  }
-
-  function escapeHtml(str) {
-    return String(str)
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
-  }
-
-function clearForm() {
-  document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
-    if (el.id !== 'date') el.value = '';
-  });
-  $('session').selectedIndex = 0;
-  setToday();
-  clearPitCrewInfo();
-  setStatus('Form cleared.');
-}
-
-  function toCSV(rows) {
-    const headers = [
-      'date','track','event','session','car','driver','track_temp','air_temp','notes',
-      'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
-      'temp_inner','temp_center','temp_outer'
-    ];
-
-    const esc = (v) => {
-      const s = v === null || v === undefined ? '' : String(v);
-      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-    };
-
-    const lines = [headers.join(',')];
-    for (const row of rows) {
-      lines.push(headers.map(h => esc(row[h])).join(','));
-    }
-    return lines.join('\n');
-  }
-
-  function downloadCSV() {
-    if (!entries.length) {
-      setStatus('There is no data to export yet.', true);
-      return;
+    function fmt(v, digits = 1) {
+      return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
     }
 
-    const csv = toCSV(entries);
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    const stamp = $('date').value || 'tire-log';
+    function setStatus(message, isWarn = false) {
+      const el = $('status');
+      el.textContent = message;
+      el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
+    }
 
-    a.href = url;
-    a.download = `dnd-tire-log-${stamp}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
+    function readSessionHeader() {
+      return {
+        date: $('date').value,
+        track: $('track').value.trim(),
+        event: $('event').value.trim(),
+        session: $('session').value,
+        car: $('car').value.trim(),
+        driver: $('driver').value.trim(),
+        track_temp: num($('airTrack').value),
+        air_temp: num($('airAmbient').value),
+        notes: $('sessionNotes').value.trim()
+      };
+    }
 
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-    setStatus('CSV saved.');
-  }
+    function readCorner(corner) {
+      return {
+        corner: cornerNames[corner],
+        brand: $(`${corner}_brand`).value.trim(),
+        compound: $(`${corner}_compound`).value.trim(),
+        serial: $(`${corner}_serial`).value.trim(),
+        cold_psi: num($(`${corner}_cold`).value),
+        hot_psi: num($(`${corner}_hot`).value),
+        circumference: num($(`${corner}_circ`).value),
+        stagger: num($(`${corner}_stagger`).value),
+        temp_inner: num($(`${corner}_tread_i`).value),
+        temp_center: num($(`${corner}_tread_c`).value),
+        temp_outer: num($(`${corner}_tread_o`).value)
+      };
+    }
 
-  function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
+    function hasCornerData(cornerData) {
+      return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
+    }
 
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      const next = line[i + 1];
+    function addSession() {
+      const header = readSessionHeader();
+      const newRows = [];
 
-      if (ch === '"') {
-        if (inQuotes && next === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
+      for (const c of corners) {
+        const cornerData = readCorner(c);
+        if (hasCornerData(cornerData)) {
+          newRows.push({ ...header, ...cornerData });
         }
-      } else if (ch === ',' && !inQuotes) {
-        result.push(current);
-        current = '';
-      } else {
-        current += ch;
       }
+
+      if (!newRows.length) {
+        setStatus('Enter data in at least one tire corner before adding.', true);
+        return;
+      }
+
+      entries = [...entries, ...newRows];
+      persist();
+      render();
+      setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
     }
 
-    result.push(current);
-    return result;
-  }
+    function persist() {
+      localStorage.setItem(storageKey, JSON.stringify(entries));
+    }
 
-  function loadCSVFile(file) {
-    const reader = new FileReader();
-
-    reader.onload = () => {
+    function loadStored() {
       try {
-        const text = String(reader.result || '').trim();
-        if (!text) {
-          setStatus('The selected CSV file is empty.', true);
-          return;
-        }
-
-        const lines = text.split(/\r?\n/);
-        const headers = parseCSVLine(lines[0]);
-        const rows = [];
-
-        for (let i = 1; i < lines.length; i++) {
-          if (!lines[i].trim()) continue;
-          const values = parseCSVLine(lines[i]);
-          const row = {};
-          headers.forEach((h, idx) => row[h] = values[idx] ?? '');
-          rows.push(row);
-        }
-
-        entries = rows;
-        persist();
-        render();
-        setStatus(`Loaded ${rows.length} rows from CSV.`);
-      } catch (err) {
-        console.error(err);
-        setStatus('Could not read that CSV file.', true);
+        const raw = localStorage.getItem(storageKey);
+        entries = raw ? JSON.parse(raw) : [];
+      } catch {
+        entries = [];
       }
-    };
-
-    reader.readAsText(file);
-  }
-
- // ===== QR SCANNER =====
-let qrScannerInstance = null;
-let activeCorner = null;
-let scannerStarting = false;
-
-async function scanTire(corner) {
-  activeCorner = corner;
-
-  const scannerUI = document.getElementById('qrScanner');
-  const qrReader = document.getElementById('qrReader');
-
-  if (scannerStarting) return;
-  scannerStarting = true;
-
-  try {
-    if (!window.isSecureContext) {
-      throw new Error('Camera requires HTTPS.');
     }
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Camera access is not available in this browser.');
+    function updateStats() {
+      $('statCount').textContent = String(entries.length);
+
+      const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
+      const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
+      const growthVals = entries
+        .map(r => {
+          const hot = Number(r.hot_psi);
+          const cold = Number(r.cold_psi);
+          return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
+        })
+        .filter(Number.isFinite);
+
+      const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+      $('statCold').textContent = fmt(avg(coldVals), 1);
+      $('statHot').textContent = fmt(avg(hotVals), 1);
+      $('statGrowth').textContent = fmt(avg(growthVals), 3);
     }
 
-    if (qrScannerInstance) {
-      try { await qrScannerInstance.stop(); } catch {}
-      try { await qrScannerInstance.clear(); } catch {}
-      qrScannerInstance = null;
+    function safeVal(value) {
+      return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
     }
 
-    qrReader.innerHTML = '';
-    scannerUI.style.display = 'flex';
-
-    qrScannerInstance = new Html5Qrcode('qrReader');
-    setStatus('Starting camera.');
-
-    try {
-      await qrScannerInstance.start(
-        { facingMode: { exact: 'environment' } },
-        { fps: 10, qrbox: 250 },
-        onScanSuccess
-      );
-    } catch (err) {
-      console.warn('Back camera failed, trying fallback camera.', err);
-      await qrScannerInstance.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: 250 },
-        onScanSuccess
-      );
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
 
-    setStatus('Scanner ready. Point camera at QR code.');
-  } catch (err) {
-    console.error('Scanner start failed:', err);
-    scannerUI.style.display = 'none';
-    const msg = err?.message || (typeof err === 'string' ? err : 'Camera could not be started.');
-    setStatus(`Scanner failed: ${msg}`, true);
-  } finally {
-    scannerStarting = false;
-  }
-}
+    function render() {
+      const tbody = $('logBody');
+      tbody.innerHTML = '';
 
-function onScanSuccess(decodedText) {
-  stopScanner();
-  applyScannedTire(decodedText);
-}
+      if (!entries.length) {
+        $('logEmpty').style.display = 'block';
+        $('tableWrap').style.display = 'none';
+        updateStats();
+        return;
+      }
 
-async function stopScanner() {
-  const scannerUI = document.getElementById('qrScanner');
+      $('logEmpty').style.display = 'none';
+      $('tableWrap').style.display = 'block';
 
-  try {
-    if (qrScannerInstance) {
-      try { await qrScannerInstance.stop(); } catch {}
-      try { await qrScannerInstance.clear(); } catch {}
+      for (const row of entries) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(row.date || '')}</td>
+          <td>${escapeHtml(row.track || '')}</td>
+          <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
+          <td>${escapeHtml(row.corner || '')}</td>
+          <td>${escapeHtml(row.brand || '')}</td>
+          <td>${escapeHtml(row.compound || '')}</td>
+          <td>${safeVal(row.cold_psi)}</td>
+          <td>${safeVal(row.hot_psi)}</td>
+          <td>${safeVal(row.circumference)}</td>
+          <td>${safeVal(row.stagger)}</td>
+          <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
+          <td>${escapeHtml(row.serial || '')}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      updateStats();
     }
-  } finally {
-    qrScannerInstance = null;
-    scannerUI.style.display = 'none';
-  }
-}
 
-function applyScannedTire(tireID) {
-  if (!activeCorner) return;
+    function clearForm() {
+      document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
+        if (el.id !== 'date') el.value = '';
+      });
+      $('session').selectedIndex = 0;
+      setToday();
+      clearPitCrewInfo();
+      setStatus('Form cleared.');
+    }
 
-  $(`${activeCorner}_serial`).value = tireID;
+    function toCSV(rows) {
+      const headers = [
+        'date','track','event','session','car','driver','track_temp','air_temp','notes',
+        'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
+        'temp_inner','temp_center','temp_outer'
+      ];
 
-  const match = [...entries].reverse().find(e => e.serial === tireID);
+      const esc = (v) => {
+        const s = v === null || v === undefined ? '' : String(v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
 
-  if (match) {
-    $(`${activeCorner}_brand`).value = match.brand || '';
-    $(`${activeCorner}_compound`).value = match.compound || '';
-    $(`${activeCorner}_cold`).value = match.cold_psi || '';
-    $(`${activeCorner}_hot`).value = match.hot_psi || '';
-    $(`${activeCorner}_tread_i`).value = match.temp_inner || '';
-    $(`${activeCorner}_tread_c`).value = match.temp_center || '';
-    $(`${activeCorner}_tread_o`).value = match.temp_outer || '';
+      const lines = [headers.join(',')];
+      for (const row of rows) {
+        lines.push(headers.map(h => esc(row[h])).join(','));
+      }
+      return lines.join('\n');
+    }
 
-    showPitCrewInfo(match);
-    setStatus(`Loaded pit crew data for ${tireID}`);
-  } else {
+    function downloadCSV() {
+      if (!entries.length) {
+        setStatus('There is no data to export yet.', true);
+        return;
+      }
+      const csv = toCSV(entries);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = $('date').value || 'tire-log';
+      a.href = url;
+      a.download = `dnd-tire-log-${stamp}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus('CSV saved.');
+    }
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        const next = text[i + 1];
+
+        if (ch === '"') {
+          if (inQuotes && next === '"') {
+            cell += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          row.push(cell);
+          cell = '';
+        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+          if (ch === '\r' && next === '\n') i++;
+          row.push(cell);
+          if (row.some(v => v !== '')) rows.push(row);
+          row = [];
+          cell = '';
+        } else {
+          cell += ch;
+        }
+      }
+
+      if (cell !== '' || row.length) {
+        row.push(cell);
+        if (row.some(v => v !== '')) rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function loadCSVFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = String(reader.result || '');
+          if (!text.trim()) {
+            setStatus('The selected CSV file is empty.', true);
+            return;
+          }
+
+          const parsed = parseCSV(text);
+          if (!parsed.length) {
+            setStatus('Could not read that CSV file.', true);
+            return;
+          }
+
+          const headers = parsed[0];
+          const rows = [];
+
+          for (let i = 1; i < parsed.length; i++) {
+            const values = parsed[i];
+            const row = {};
+            headers.forEach((h, idx) => row[h] = values[idx] ?? '');
+            rows.push(row);
+          }
+
+          entries = rows;
+          persist();
+          render();
+          setStatus(`Loaded ${rows.length} rows from CSV.`);
+        } catch (err) {
+          console.error(err);
+          setStatus('Could not read that CSV file.', true);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    function openCSVPicker() {
+      $('csvLoader').click();
+    }
+
+    function loadCSV(event) {
+      const file = event.target.files?.[0];
+      if (file) loadCSVFile(file);
+      event.target.value = '';
+    }
+
+    function showPitCrewInfo(row) {
+      $('pitCrewEmpty').style.display = 'none';
+      $('pitCrewCard').style.display = 'block';
+
+      $('pitSerial').textContent = row.serial || '-';
+      $('pitCorner').textContent = row.corner || '-';
+      $('pitSession').textContent = row.session || '-';
+      $('pitDate').textContent = row.date || '-';
+
+      $('pitCold').textContent = row.cold_psi !== '' ? row.cold_psi : '-';
+      $('pitHot').textContent = row.hot_psi !== '' ? row.hot_psi : '-';
+
+      $('pitInner').textContent = row.temp_inner !== '' ? row.temp_inner : '-';
+      $('pitCenter').textContent = row.temp_center !== '' ? row.temp_center : '-';
+      $('pitOuter').textContent = row.temp_outer !== '' ? row.temp_outer : '-';
+
+      $('pitNotes').textContent = row.notes && String(row.notes).trim()
+        ? row.notes
+        : 'No notes saved for this tire.';
+    }
+
+    function clearPitCrewInfo() {
+      $('pitCrewEmpty').style.display = 'block';
+      $('pitCrewCard').style.display = 'none';
+      $('pitSerial').textContent = '-';
+      $('pitCorner').textContent = '-';
+      $('pitSession').textContent = '-';
+      $('pitDate').textContent = '-';
+      $('pitCold').textContent = '-';
+      $('pitHot').textContent = '-';
+      $('pitInner').textContent = '-';
+      $('pitCenter').textContent = '-';
+      $('pitOuter').textContent = '-';
+      $('pitNotes').textContent = 'No notes saved for this tire.';
+    }
+
+    function fillCornerFromRow(corner, row) {
+      $(`${corner}_serial`).value = row.serial || '';
+      $(`${corner}_brand`).value = row.brand || '';
+      $(`${corner}_compound`).value = row.compound || '';
+      $(`${corner}_cold`).value = row.cold_psi || '';
+      $(`${corner}_hot`).value = row.hot_psi || '';
+      $(`${corner}_tread_i`).value = row.temp_inner || '';
+      $(`${corner}_tread_c`).value = row.temp_center || '';
+      $(`${corner}_tread_o`).value = row.temp_outer || '';
+    }
+
+    function applyScannedTire(decodedText) {
+      const parsed = tryParseQrPayload(decodedText);
+
+      if (scanMode === 'pit') {
+        loadPitCrewFromScan(parsed);
+        return;
+      }
+
+      if (!activeCorner) return;
+
+      if (parsed.mode === 'json') {
+        const data = parsed.data;
+        $(`${activeCorner}_serial`).value = data.id || '';
+        $(`${activeCorner}_brand`).value = data.brand || '';
+        $(`${activeCorner}_compound`).value = data.compound || '';
+        $(`${activeCorner}_cold`).value = data.cold_psi ?? '';
+        $(`${activeCorner}_hot`).value = data.hot_psi ?? '';
+        $(`${activeCorner}_tread_i`).value = data.temp_inner ?? '';
+        $(`${activeCorner}_tread_c`).value = data.temp_center ?? '';
+        $(`${activeCorner}_tread_o`).value = data.temp_outer ?? '';
+
+        if (data.notes) {
+          $('pitCrewEmpty').style.display = 'none';
+          $('pitCrewCard').style.display = 'block';
+          $('pitSerial').textContent = data.id || '-';
+          $('pitCorner').textContent = '-';
+          $('pitSession').textContent = 'QR Data';
+          $('pitDate').textContent = '-';
+          $('pitCold').textContent = data.cold_psi ?? '-';
+          $('pitHot').textContent = data.hot_psi ?? '-';
+          $('pitInner').textContent = data.temp_inner ?? '-';
+          $('pitCenter').textContent = data.temp_center ?? '-';
+          $('pitOuter').textContent = data.temp_outer ?? '-';
+          $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
+        }
+
+        setStatus(`Loaded tire data from QR into ${cornerNames[activeCorner]}.`);
+        return;
+      }
+
+      const tireID = parsed.id;
+      $(`${activeCorner}_serial`).value = tireID;
+
+      const match = [...entries].reverse().find(e => e.serial === tireID);
+
+      if (match) {
+        fillCornerFromRow(activeCorner, match);
+        showPitCrewInfo(match);
+        setStatus(`Loaded pit crew data for ${tireID}`);
+      } else {
+        clearPitCrewInfo();
+        setStatus(`New tire scanned: ${tireID}`);
+      }
+    }
+
+    function tryParseQrPayload(decodedText) {
+      try {
+        const parsed = JSON.parse(decodedText);
+        if (parsed && typeof parsed === 'object') {
+          return {
+            mode: 'json',
+            id: parsed.id || decodedText,
+            data: parsed
+          };
+        }
+      } catch {}
+      return {
+        mode: 'plain',
+        id: decodedText,
+        data: null
+      };
+    }
+
+    function loadPitCrewFromScan(parsed) {
+      const tireID = parsed.id;
+
+      if (parsed.mode === 'json') {
+        const data = parsed.data;
+        $('pitCrewEmpty').style.display = 'none';
+        $('pitCrewCard').style.display = 'block';
+
+        $('pitSerial').textContent = data.id || '-';
+        $('pitCorner').textContent = '-';
+        $('pitSession').textContent = 'QR Data';
+        $('pitDate').textContent = '-';
+        $('pitCold').textContent = data.cold_psi ?? '-';
+        $('pitHot').textContent = data.hot_psi ?? '-';
+        $('pitInner').textContent = data.temp_inner ?? '-';
+        $('pitCenter').textContent = data.temp_center ?? '-';
+        $('pitOuter').textContent = data.temp_outer ?? '-';
+        $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
+
+        setStatus(`Loaded pit crew QR data for ${tireID}`);
+        return;
+      }
+
+      const match = [...entries].reverse().find(e => e.serial === tireID);
+
+      if (match) {
+        showPitCrewInfo(match);
+        setStatus(`Loaded pit crew data for ${tireID}`);
+      } else {
+        $('pitCrewEmpty').style.display = 'none';
+        $('pitCrewCard').style.display = 'block';
+
+        $('pitSerial').textContent = tireID || '-';
+        $('pitCorner').textContent = '-';
+        $('pitSession').textContent = '-';
+        $('pitDate').textContent = '-';
+        $('pitCold').textContent = '-';
+        $('pitHot').textContent = '-';
+        $('pitInner').textContent = '-';
+        $('pitCenter').textContent = '-';
+        $('pitOuter').textContent = '-';
+        $('pitNotes').textContent = 'No saved history found for this tire.';
+
+        setStatus(`Scanned ${tireID}, but no saved log history was found.`);
+      }
+    }
+
+    async function startScanner(onMode) {
+      const scannerUI = $('qrScanner');
+      const qrReader = $('qrReader');
+
+      if (scannerStarting) return;
+      scannerStarting = true;
+
+      try {
+        if (!window.isSecureContext) {
+          throw new Error('Camera requires HTTPS.');
+        }
+
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+          throw new Error('Camera access is not available in this browser.');
+        }
+
+        if (qrScannerInstance) {
+          try { await qrScannerInstance.stop(); } catch {}
+          try { await qrScannerInstance.clear(); } catch {}
+          qrScannerInstance = null;
+        }
+
+        qrReader.innerHTML = '';
+        scannerUI.style.display = 'flex';
+
+        qrScannerInstance = new Html5Qrcode('qrReader');
+
+        try {
+          await qrScannerInstance.start(
+            { facingMode: { exact: 'environment' } },
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+          );
+        } catch (err) {
+          console.warn('Back camera exact failed, trying fallback.', err);
+          await qrScannerInstance.start(
+            { facingMode: 'environment' },
+            { fps: 10, qrbox: 250 },
+            onScanSuccess
+          );
+        }
+
+        setStatus(onMode === 'pit'
+          ? 'Pit crew scanner ready. Point camera at QR code.'
+          : 'Scanner ready. Point camera at QR code.'
+        );
+      } catch (err) {
+        console.error('Scanner start failed:', err);
+        scannerUI.style.display = 'none';
+        const msg = err?.message || String(err);
+        setStatus(`Scanner failed: ${msg}`, true);
+      } finally {
+        scannerStarting = false;
+      }
+    }
+
+    function scanTire(corner) {
+      activeCorner = corner;
+      scanMode = 'corner';
+      startScanner('corner');
+    }
+
+    function scanPitCrewTire() {
+      activeCorner = null;
+      scanMode = 'pit';
+      startScanner('pit');
+    }
+
+    function onScanSuccess(decodedText) {
+      stopScanner();
+      applyScannedTire(decodedText);
+    }
+
+    async function stopScanner() {
+      try {
+        if (qrScannerInstance) {
+          try { await qrScannerInstance.stop(); } catch {}
+          try { await qrScannerInstance.clear(); } catch {}
+        }
+      } finally {
+        qrScannerInstance = null;
+        $('qrScanner').style.display = 'none';
+      }
+    }
+
+    $('addBtn').addEventListener('click', addSession);
+    $('clearBtn').addEventListener('click', clearForm);
+    $('saveCsvBtn').addEventListener('click', downloadCSV);
+    $('printBtn').addEventListener('click', () => window.print());
+    $('csvLoader').addEventListener('change', loadCSV);
+
+    setToday();
+    loadStored();
+    render();
     clearPitCrewInfo();
-    setStatus(`New tire scanned: ${tireID}`);
-  }
-}
-	async function scanPitCrewTire() {
-  activeCorner = null; // important: this scan is not tied to LF/RF/LR/RR
-
-  const scannerUI = document.getElementById('qrScanner');
-  const qrReader = document.getElementById('qrReader');
-
-  if (scannerStarting) return;
-  scannerStarting = true;
-
-  try {
-    if (!window.isSecureContext) {
-      throw new Error('Camera requires HTTPS.');
-    }
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      throw new Error('Camera access is not available in this browser.');
-    }
-
-    if (qrScannerInstance) {
-      try { await qrScannerInstance.stop(); } catch {}
-      try { await qrScannerInstance.clear(); } catch {}
-      qrScannerInstance = null;
-    }
-
-    qrReader.innerHTML = '';
-    scannerUI.style.display = 'flex';
-
-    qrScannerInstance = new Html5Qrcode('qrReader');
-    setStatus('Starting pit crew scanner.');
-
-    try {
-      await qrScannerInstance.start(
-        { facingMode: { exact: 'environment' } },
-        { fps: 10, qrbox: 250 },
-        onPitCrewScanSuccess
-      );
-    } catch (err) {
-      await qrScannerInstance.start(
-        { facingMode: 'environment' },
-        { fps: 10, qrbox: 250 },
-        onPitCrewScanSuccess
-      );
-    }
-
-    setStatus('Pit crew scanner ready.');
-  } catch (err) {
-    console.error(err);
-    scannerUI.style.display = 'none';
-    setStatus(`Scanner failed: ${err.message || err}`, true);
-  } finally {
-    scannerStarting = false;
-  }
-}
-	function onPitCrewScanSuccess(decodedText) {
-  stopScanner();
-  loadPitCrewFromScan(decodedText);
-}
-	function loadPitCrewFromScan(decodedText) {
-  let tireID = decodedText;
-
-  try {
-    const parsed = JSON.parse(decodedText);
-    tireID = parsed.id || decodedText;
-  } catch {
-    // plain text QR, keep as-is
-  }
-
-  const match = [...entries].reverse().find(e => e.serial === tireID);
-
-  if (match) {
-    showPitCrewInfo(match);
-    setStatus(`Loaded pit crew data for ${tireID}`);
-  } else {
-    $('pitCrewEmpty').style.display = 'none';
-    $('pitCrewCard').style.display = 'block';
-
-    $('pitSerial').textContent = tireID || '-';
-    $('pitCorner').textContent = '-';
-    $('pitSession').textContent = '-';
-    $('pitDate').textContent = '-';
-    $('pitCold').textContent = '-';
-    $('pitHot').textContent = '-';
-    $('pitInner').textContent = '-';
-    $('pitCenter').textContent = '-';
-    $('pitOuter').textContent = '-';
-    $('pitNotes').textContent = 'No saved history found for this tire.';
-
-    setStatus(`Scanned ${tireID}, but no saved log history was found.`);
-  }
-}
-</script>
-	<div id="qrScanner" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  z-index:999;
-  align-items:center;
-  justify-content:center;
-  flex-direction:column;
-">
-  <div id="qrReader" style="width:300px;"></div>
-  <button class="btn2" style="margin-top:15px;" onclick="stopScanner()">Cancel</button>
-</div>
+  </script>
 </body>
 </html>
