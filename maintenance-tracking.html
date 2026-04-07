@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DND Racing Maintenance Tracker</title>
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --panel:#141422;
+      --panel2:#10101a;
+      --text:#f3f3f7;
+      --muted:#b9b9c9;
+      --pink:#ff2ea6;
+      --pink2:#ff5cc1;
+      --line:#2a2a3b;
+      --good:#2effa6;
+      --warn:#ffd84d;
+      --bad:#ff6b7a;
+    }
+
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        linear-gradient(rgba(8,8,14,0.88), rgba(8,8,14,0.94)),
+        radial-gradient(circle at top right, rgba(255,46,166,0.16), transparent 22%),
+        radial-gradient(circle at bottom left, rgba(255,92,193,0.10), transparent 18%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.96), rgba(11,11,16,.88));
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{display:flex;align-items:center;gap:12px;}
+
+    .logo{
+      width:46px;
+      height:46px;
+      border-radius:12px;
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.6));
+      display:grid;
+      place-items:center;
+      color:#190113;
+      font-weight:900;
+      letter-spacing:.5px;
+      box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+    }
+
+    h1{font-size:18px;margin:0;letter-spacing:.5px;}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px;}
+    .wrap{max-width:1280px;margin:0 auto;padding:16px;}
+    .grid{display:grid;gap:14px;}
+    .grid.cols2{grid-template-columns:1.15fr .85fr;}
+    .grid.cols3{grid-template-columns:repeat(3,1fr);}
+    .row{display:grid;gap:10px;}
+    .row.cols2{grid-template-columns:repeat(2,1fr);}
+    .row.cols3{grid-template-columns:repeat(3,1fr);}
+    .row.cols4{grid-template-columns:repeat(4,1fr);}
+
+    @media(max-width:1100px){
+      .grid.cols2,.grid.cols3,.row.cols2,.row.cols3,.row.cols4{grid-template-columns:1fr;}
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+    }
+
+    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
+
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+
+    input,select,textarea{
+      width:100%;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px;
+      font-size:15px;
+      outline:none;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(255,46,166,.7);
+      box-shadow:0 0 0 4px rgba(255,46,166,.15);
+    }
+
+    textarea{min-height:110px;resize:vertical;}
+
+    .check-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    @media(max-width:900px){
+      .check-grid{grid-template-columns:1fr;}
+    }
+
+    .task-card{
+      border:1px dashed rgba(255,46,166,.35);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,46,166,.04);
+    }
+
+    .task-card h3{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.5px;
+    }
+
+    .checkline{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
+    .checkline input[type="checkbox"]{
+      width:20px;
+      height:20px;
+      accent-color: var(--pink);
+      flex:0 0 auto;
+    }
+
+    .checkline span{
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+
+    .btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+
+    .btn2{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+
+    .btn3{
+      background:linear-gradient(180deg, rgba(46,255,166,.9), rgba(46,255,166,.6));
+      color:#032116;
+      box-shadow:0 12px 26px rgba(46,255,166,.18);
+    }
+
+    .status{font-size:13px;color:var(--muted);margin-top:10px;min-height:18px;}
+
+    .bigstats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .stat{
+      flex:1;
+      min-width:160px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .stat .k{font-size:12px;color:var(--muted);}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
+    .v.good{color:var(--good);}
+    .v.warn{color:var(--warn);}
+    .v.bad{color:var(--bad);}
+
+    .table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--line);}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1250px;
+      background:rgba(255,255,255,.02);
+    }
+
+    th,td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:13px;
+      vertical-align:top;
+    }
+
+    th{
+      color:var(--muted);
+      font-weight:700;
+      background:rgba(255,255,255,.03);
+      position:sticky;
+      top:0;
+    }
+
+    tr:hover td{background:rgba(255,255,255,.025);}
+
+    .empty{
+      padding:18px;
+      border:1px dashed rgba(255,46,166,.25);
+      border-radius:14px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .tag{
+      display:inline-block;
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,46,166,.4);
+      color:var(--text);
+      background:rgba(255,46,166,.08);
+    }
+
+    @media print {
+      body{background:#fff !important;color:#000 !important;}
+      header,.btnbar,.status,#csvLoader{display:none !important;}
+      .wrap{max-width:100%;padding:0;}
+      .card,.task-card,.stat,.table-wrap{background:#fff !important;color:#000 !important;box-shadow:none !important;border:1px solid #ccc !important;}
+      input,select,textarea{border:none !important;background:transparent !important;color:#000 !important;padding:3px 0 !important;}
+      label,.pill,.sub,.k{color:#555 !important;}
+      .grid,.row,.check-grid{display:block !important;}
+      .card,.task-card{margin-bottom:10px !important;break-inside:avoid;page-break-inside:avoid;}
+      .v,.v.good,.v.warn,.v.bad{color:#000 !important;}
+      @page { size: letter portrait; margin: 0.4in; }
+    }
+		btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+    .btn2{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .bigstats{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+	.btn3{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+	header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+
+  background-image: url("logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
+background:
+    linear-gradient(
+      rgba(8,8,14,0.85),
+      rgba(8,8,14,0.92)
+    ),
+    url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+    :root{
+      --bg:#0b0b10;
+      --panel:#141422;
+      --panel2:#10101a;
+      --text:#f3f3f7;
+      --muted:#b9b9c9;
+      --pink:#ff2ea6;
+      --pink2:#ff5cc1;
+      --line:#2a2a3b;
+      --good:#2effa6;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+   body{
+  margin:0;
+  color:var(--text);
+
+  background:
+    linear-gradient(
+      rgba(8,8,14,0.85),
+      rgba(8,8,14,0.92)
+    ),
+    url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+
+  background-image: url("logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
+    h1{font-size:18px;margin:0;letter-spacing:.5px;}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px;}
+    .wrap{max-width:1200px;margin:0 auto;padding:16px;}
+    .grid{display:grid;gap:14px;}
+    @media(min-width:980px){ .grid.cols2{grid-template-columns:1fr 1fr;} }
+    @media(min-width:980px){ .grid.cols3{grid-template-columns:1.2fr .8fr .8fr;} }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
+    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px;}
+    .row{display:grid;gap:10px;}
+    @media(min-width:640px){ .row.cols4{grid-template-columns:repeat(4,1fr);} }
+    @media(min-width:640px){ .row.cols2{grid-template-columns:repeat(2,1fr);} }
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    input, select, textarea{
+      width:100%;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:16px;
+      outline:none;
+    }
+    textarea{min-height:46px; resize:vertical;}
+    input:focus, select:focus, textarea:focus{border-color:rgba(255,46,166,.7); box-shadow:0 0 0 4px rgba(255,46,166,.15);}
+    .corner{
+      border:1px dashed rgba(255,46,166,.35);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,46,166,.04);
+    }
+    .corner h3{margin:0 0 10px 0;font-size:14px; letter-spacing:.4px;}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    button{
+      border:none; cursor:pointer;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+    .btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+    .btn2{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .bigstats{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+	.btn3{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .bigstats{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .stat{
+      flex:1;
+      min-width:180px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .stat .k{font-size:12px;color:var(--muted);}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
+    .v.good{color:var(--good);}
+
+ .car-map{
+  display:grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  align-items: stretch;
+
+  grid-template-areas:
+    "lf car rf"
+    "lr car rr";
+}
+
+.car-center{
+  grid-area: car;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,46,166,.25);
+  border-radius:16px;
+  background: rgba(0,0,0,.20);
+  min-height: 420px;
+  position: relative;
+}
+
+.car-center img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.corner-card{
+  border:1px dashed rgba(255,46,166,.35);
+  border-radius:16px;
+  padding:12px;
+  background: rgba(255,46,166,.04);
+}
+
+.corner-card h3{
+  margin:0 0 10px 0;
+  font-size:14px;
+  letter-spacing:.6px;
+}
+
+.corner-card.lf{ grid-area: lf; }
+.corner-card.rf{ grid-area: rf; }
+.corner-card.lr{ grid-area: lr; }
+.corner-card.rr{ grid-area: rr; }
+
+body{ overflow: hidden; }
+
+.wrap{
+	max-width:1200px;
+	margin:0 auto;
+	padding:16px;
+	padding-right: calc(100vw-1200px)/2 + 10px);
+	margin-right: calc(-1*((100vw-1200px)/2 + 10px));
+	
+	height: calc(100vh - 78px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.wrap::-webkit-scrollbar{ width: 18px; }
+.wrap::-webkit-scrollbar-track{ 
+	background: #080808e; 
+}
+.wrap::-webkit-scrollbar-thumb{
+	background: #ff5cc1;
+	border-radius:10px;
+	border:2px solid #08080e;
+}
+.wrap::-webkit-scrollbar-thumb:hover{
+	background: #ff5cc1; 
+}
+.notesBox {
+    width: 600px;
+    height: 150px;
+    background: #080808e;
+    color: white;
+    border: 1px solid #2a2a3b;
+    padding: 10px;
+    resize: none;
+}
+
+/* Chrome, Edge, Safari */
+.notesBox::-webkit-scrollbar {
+    width: 12px;
+}
+
+.notesBox::-webkit-scrollbar-track {
+    background: #08080e;
+}
+
+.notesBox::-webkit-scrollbar-thumb {
+    background: #ff5cc1;
+    border-radius: 6px;
+}
+
+.notesBox::-webkit-scrollbar-thumb:hover {
+    background: #ff5cc1;
+}
+
+notesBox2 {
+    width: 1200px;
+    height: 150px;
+    background: #080808e;
+    color: white;
+    border: 1px solid #2a2a3b;
+    padding: 10px;
+    resize: none;
+}
+
+/* Chrome, Edge, Safari */
+.notesBox2::-webkit-scrollbar {
+    width: 12px;
+}
+
+.notesBox2::-webkit-scrollbar-track {
+    background: #08080e;
+}
+
+.notesBox2::-webkit-scrollbar-thumb {
+    background: #ff5cc1;
+    border-radius: 6px;
+}
+
+.notesBox2::-webkit-scrollbar-thumb:hover {
+    background: #ff5cc1;
+}
+
+  </style>
+</head>
+<body>
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <h1>Maintenance Logging</h1>
+    </div>
+  </div>
+  <div class="btnbar">
+  <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
+  <button class="btn2" onclick="openCSVPicker()">Load Notes</button>
+
+  <button class="btn3" onclick="window.location.href='DND Splash Screen.html'">Return Home</button>
+</div>
+</header>
+  
+
+  <div class="wrap">
+    <div class="grid cols2">
+      <section class="card">
+        <div class="title">
+          <h2>Maintenance Session Info</h2>
+          <span class="pill">Weekly Check</span>
+        </div>
+
+        <div class="row cols4">
+          <div>
+            <label for="date">Date</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="track">Track</label>
+            <input id="track" type="text" placeholder="Merrittville" />
+          </div>
+          <div>
+            <label for="event">Event</label>
+            <input id="event" type="text" placeholder="Weekly show" />
+          </div>
+          <div>
+            <label for="car">Car</label>
+            <input id="car" type="text" placeholder="13M" />
+          </div>
+        </div>
+
+        <div class="row cols3" style="margin-top:10px;">
+          <div>
+            <label for="crew">Crew / Completed By</label>
+            <input id="crew" type="text" placeholder="Dan McKay" />
+          </div>
+          <div>
+            <label for="engineHours">Engine / Run Notes</label>
+            <input id="engineHours" type="text" placeholder="2 heats + feature" />
+          </div>
+          <div>
+            <label for="overallCondition">Overall Condition</label>
+            <select id="overallCondition">
+              <option>Good</option>
+              <option>Needs Attention</option>
+              <option>Repair Before Race</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="title">
+          <h2>Quick Stats</h2>
+          <span class="pill">Auto Calculated</span>
+        </div>
+        <div class="bigstats">
+          <div class="stat">
+            <div class="k">Maintenance Logs</div>
+            <div class="v" id="statCount">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Items Checked Off</div>
+            <div class="v good" id="statDone">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Pending Items</div>
+            <div class="v warn" id="statPending">0</div>
+          </div>
+          <div class="stat">
+            <div class="k">Repair Flags</div>
+            <div class="v bad" id="statRepair">0</div>
+          </div>
+        </div>
+        <div class="status" id="status">Ready to log maintenance work.</div>
+      </section>
+    </div>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Maintenance Checklist</h2>
+        <span class="pill">Pre / Post Race</span>
+      </div>
+
+      <div class="check-grid">
+        <div class="task-card">
+          <h3>Nut and Bolt Check</h3>
+          <div class="checkline"><input id="nutBolt_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="nutBolt_condition">Condition</label>
+              <select id="nutBolt_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="nutBolt_parts">Parts / Area</label>
+              <input id="nutBolt_parts" type="text" placeholder="Front end, suspension, birdcages" />
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <h3>U Joints</h3>
+          <div class="checkline"><input id="uJoint_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="uJoint_condition">Condition</label>
+              <select id="uJoint_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="uJoint_parts">Parts / Area</label>
+              <input id="uJoint_parts" type="text" placeholder="Driveshaft / joints" />
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <h3>Tires</h3>
+          <div class="checkline"><input id="tires_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="tires_condition">Condition</label>
+              <select id="tires_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="tires_parts">Parts / Area</label>
+              <input id="tires_parts" type="text" placeholder="Wear, cuts, stagger, pressure" />
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <h3>Spark Plugs</h3>
+          <div class="checkline"><input id="plugs_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="plugs_condition">Condition</label>
+              <select id="plugs_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="plugs_parts">Parts / Area</label>
+              <input id="plugs_parts" type="text" placeholder="Color, wear, replace if needed" />
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <h3>Chassis/Suspension</h3>
+          <div class="checkline"><input id="scale_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="scale_condition">Condition</label>
+              <select id="scale_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="scale_parts">Parts / Area</label>
+              <input id="scale_parts" type="text" placeholder="Cross, left, rear percentages" />
+            </div>
+          </div>
+        </div>
+
+        <div class="task-card">
+          <h3>Shocks and Springs</h3>
+          <div class="checkline"><input id="springs_done" type="checkbox" /><span>Completed</span></div>
+          <div class="row cols2" style="margin-top:10px;">
+            <div>
+              <label for="springs_condition">Condition</label>
+              <select id="springs_condition">
+                <option>Good</option>
+                <option>Needs Attention</option>
+                <option>Repair Needed</option>
+              </select>
+            </div>
+            <div>
+              <label for="springs_parts">Parts / Area</label>
+              <input id="springs_parts" type="text" placeholder="Free height, bent, collapsed" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Weekly Damage and Part Condition Notes</h2>
+        <span class="pill">Damage Log</span>
+      </div>
+      <div class="row cols2">
+        <div>
+          <label for="damageNotes">Damage / Contact / Bent Parts</label>
+          <textarea id="damageNotes" placeholder="List weekly damage, contact, cracks, bent parts, rub marks, leaks..."></textarea>
+        </div>
+        <div>
+          <label for="conditionNotes">Condition / Parts to Watch</label>
+          <textarea id="conditionNotes" placeholder="Write down wear items, upcoming replacements, weak spots, and anything to monitor next week..."></textarea>
+        </div>
+      </div>
+
+      <div class="btnbar" style="margin-top:14px;">
+        <button class="btn2" type="button" id="clearBtn">Clear Form</button>
+        <button class="btn" type="button" id="addBtn">Add Maintenance Log</button>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Saved Maintenance Log</h2>
+        <span class="pill">Browser Memory + CSV</span>
+      </div>
+
+      <div class="btnbar" style="justify-content:flex-start;margin-bottom:12px;">
+        <button class="btn3" type="button" id="saveCsvBtn">Save CSV</button>
+        <button class="btn2" type="button" id="printBtn">Print View</button>
+        <label class="btn2" for="csvLoader" style="display:inline-flex;align-items:center;justify-content:center;padding:14px 16px;cursor:pointer;">Load CSV</label>
+        <input id="csvLoader" type="file" accept=".csv" hidden />
+      </div>
+
+      <div id="logEmpty" class="empty">No maintenance logs saved yet.</div>
+      <div id="tableWrap" class="table-wrap" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Track</th>
+              <th>Event</th>
+              <th>Car</th>
+              <th>Overall</th>
+              <th>Nut & Bolt</th>
+              <th>U Joint</th>
+              <th>Tires</th>
+              <th>Spark Plugs</th>
+              <th>Scale</th>
+              <th>Smash Springs</th>
+              <th>Damage Notes</th>
+              <th>Condition Notes</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const storageKey = 'dnd_maintenance_tracker_entries';
+    let entries = [];
+
+    const itemKeys = [
+      'nutBolt',
+      'uJoint',
+      'tires',
+      'plugs',
+      'scale',
+      'springs'
+    ];
+
+    function setToday() {
+      const today = new Date();
+      const y = today.getFullYear();
+      const m = String(today.getMonth() + 1).padStart(2, '0');
+      const d = String(today.getDate()).padStart(2, '0');
+      $('date').value = `${y}-${m}-${d}`;
+    }
+
+    function readItem(key) {
+      return {
+        done: $(`${key}_done`).checked ? 'Yes' : 'No',
+        condition: $(`${key}_condition`).value,
+        parts: $(`${key}_parts`).value.trim()
+      };
+    }
+
+    function buildItemSummary(item) {
+      return `${item.done} | ${item.condition}${item.parts ? ' | ' + item.parts : ''}`;
+    }
+
+    function readForm() {
+      const data = {
+        date: $('date').value,
+        track: $('track').value.trim(),
+        event: $('event').value.trim(),
+        car: $('car').value.trim(),
+        crew: $('crew').value.trim(),
+        engine_run_notes: $('engineHours').value.trim(),
+        overall_condition: $('overallCondition').value,
+        damage_notes: $('damageNotes').value.trim(),
+        condition_notes: $('conditionNotes').value.trim()
+      };
+
+      itemKeys.forEach((key) => {
+        data[`${key}_done`] = $(`${key}_done`).checked ? 'Yes' : 'No';
+        data[`${key}_condition`] = $(`${key}_condition`).value;
+        data[`${key}_parts`] = $(`${key}_parts`).value.trim();
+        data[key] = buildItemSummary(readItem(key));
+      });
+
+      return data;
+    }
+
+    function addLog() {
+      const row = readForm();
+      const hasData = Object.values(row).some(v => String(v).trim() !== '');
+
+      if (!hasData) {
+        setStatus('Fill in at least one field before saving a maintenance log.', true);
+        return;
+      }
+
+      entries = [...entries, row];
+      persist();
+      render();
+      setStatus('Maintenance log added.');
+    }
+
+    function persist() {
+      localStorage.setItem(storageKey, JSON.stringify(entries));
+    }
+
+    function loadStored() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        entries = raw ? JSON.parse(raw) : [];
+      } catch {
+        entries = [];
+      }
+    }
+
+    function setStatus(message, isWarn = false) {
+      const el = $('status');
+      el.textContent = message;
+      el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
+    }
+
+    function updateStats() {
+      $('statCount').textContent = String(entries.length);
+
+      let done = 0;
+      let pending = 0;
+      let repair = 0;
+
+      for (const row of entries) {
+        for (const key of itemKeys) {
+          if (row[`${key}_done`] === 'Yes') done++;
+          else pending++;
+          if (row[`${key}_condition`] === 'Repair Needed') repair++;
+        }
+      }
+
+      $('statDone').textContent = String(done);
+      $('statPending').textContent = String(pending);
+      $('statRepair').textContent = String(repair);
+    }
+
+    function render() {
+      const tbody = $('logBody');
+      tbody.innerHTML = '';
+
+      if (!entries.length) {
+        $('logEmpty').style.display = 'block';
+        $('tableWrap').style.display = 'none';
+        updateStats();
+        return;
+      }
+
+      $('logEmpty').style.display = 'none';
+      $('tableWrap').style.display = 'block';
+
+      for (const row of entries) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${escapeHtml(row.date || '')}</td>
+          <td>${escapeHtml(row.track || '')}</td>
+          <td>${escapeHtml(row.event || '')}</td>
+          <td>${escapeHtml(row.car || '')}</td>
+          <td><span class="tag">${escapeHtml(row.overall_condition || '')}</span></td>
+          <td>${escapeHtml(row.nutBolt || '')}</td>
+          <td>${escapeHtml(row.uJoint || '')}</td>
+          <td>${escapeHtml(row.tires || '')}</td>
+          <td>${escapeHtml(row.plugs || '')}</td>
+          <td>${escapeHtml(row.scale || '')}</td>
+          <td>${escapeHtml(row.springs || '')}</td>
+          <td>${escapeHtml(row.damage_notes || '')}</td>
+          <td>${escapeHtml(row.condition_notes || '')}</td>
+        `;
+        tbody.appendChild(tr);
+      }
+
+      updateStats();
+    }
+
+    function clearForm() {
+      document.querySelectorAll('input:not([type=file])').forEach(el => {
+        if (el.type === 'checkbox') el.checked = false;
+        else if (el.id !== 'date') el.value = '';
+      });
+      document.querySelectorAll('textarea').forEach(el => el.value = '');
+      document.querySelectorAll('select').forEach((el, idx) => {
+        el.selectedIndex = 0;
+      });
+      setToday();
+      setStatus('Form cleared.');
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function toCSV(rows) {
+      const headers = [
+        'date','track','event','car','crew','engine_run_notes','overall_condition',
+        'nutBolt_done','nutBolt_condition','nutBolt_parts','nutBolt',
+        'uJoint_done','uJoint_condition','uJoint_parts','uJoint',
+        'tires_done','tires_condition','tires_parts','tires',
+        'plugs_done','plugs_condition','plugs_parts','plugs',
+        'scale_done','scale_condition','scale_parts','scale',
+        'springs_done','springs_condition','springs_parts','springs',
+        'damage_notes','condition_notes'
+      ];
+
+      const esc = (v) => {
+        const s = v === null || v === undefined ? '' : String(v);
+        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+      };
+
+      const lines = [headers.join(',')];
+      for (const row of rows) {
+        lines.push(headers.map(h => esc(row[h])).join(','));
+      }
+      return lines.join('\n');
+    }
+
+    function downloadCSV() {
+      if (!entries.length) {
+        setStatus('There is no maintenance data to export yet.', true);
+        return;
+      }
+      const csv = toCSV(entries);
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const stamp = $('date').value || 'maintenance-log';
+      a.href = url;
+      a.download = `dnd-maintenance-log-${stamp}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      setStatus('CSV saved.');
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let current = '';
+      let inQuotes = false;
+
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        const next = line[i + 1];
+        if (ch === '"') {
+          if (inQuotes && next === '"') {
+            current += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === ',' && !inQuotes) {
+          result.push(current);
+          current = '';
+        } else {
+          current += ch;
+        }
+      }
+      result.push(current);
+      return result;
+    }
+
+    function loadCSVFile(file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const text = String(reader.result || '').trim();
+          if (!text) {
+            setStatus('The selected CSV file is empty.', true);
+            return;
+          }
+
+          const lines = text.split(/\r?\n/);
+          const headers = parseCSVLine(lines[0]);
+          const rows = [];
+
+          for (let i = 1; i < lines.length; i++) {
+            if (!lines[i].trim()) continue;
+            const values = parseCSVLine(lines[i]);
+            const row = {};
+            headers.forEach((h, idx) => row[h] = values[idx] ?? '');
+            rows.push(row);
+          }
+
+          entries = rows;
+          persist();
+          render();
+          setStatus(`Loaded ${rows.length} maintenance logs from CSV.`);
+        } catch {
+          setStatus('Could not read that CSV file.', true);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    $('addBtn').addEventListener('click', addLog);
+    $('clearBtn').addEventListener('click', clearForm);
+    $('saveCsvBtn').addEventListener('click', downloadCSV);
+    $('printBtn').addEventListener('click', () => window.print());
+    $('csvLoader').addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (file) loadCSVFile(file);
+      e.target.value = '';
+    });
+
+    setToday();
+    loadStored();
+    render();
+  </script>
+</body>
+</html>

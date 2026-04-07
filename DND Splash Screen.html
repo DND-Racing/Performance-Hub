@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DND Racing Splash</title>
+  <style>
+    :root{
+      --bg:#06060a;
+      --panel:rgba(18,18,28,.82);
+      --text:#f5f7fb;
+      --muted:#a9afbf;
+      --pink:#ff2ea6;
+      --line:rgba(255,255,255,.08);
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    }
+
+    body{
+      min-height:100vh;
+      overflow:hidden;
+      color:var(--text);
+      background:
+        radial-gradient(circle at center, rgba(255,46,166,.12), transparent 24%),
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.04), transparent 16%),
+        radial-gradient(circle at 80% 80%, rgba(255,46,166,.08), transparent 18%),
+        linear-gradient(180deg, #040407, #09090f 55%, #0b0b12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+      background-size:42px 42px;
+      opacity:.22;
+      mask-image:radial-gradient(circle at center, rgba(0,0,0,1), rgba(0,0,0,.18));
+    }
+
+    .scene{
+      position:relative;
+      width:min(1100px, 96vw);
+      height:min(900px, 94vh);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .orbit-ring,
+    .orbit-ring2{
+      position:absolute;
+      border-radius:50%;
+      pointer-events:none;
+    }
+
+    .orbit-ring{
+      width:900px;
+      height:900px;
+      border:1px solid rgba(255,255,255,.06);
+      box-shadow:0 0 28px rgba(255,46,166,.08), inset 0 0 28px rgba(255,46,166,.04);
+    }
+
+    .orbit-ring::before{
+      content:"";
+      position:absolute;
+      inset:16px;
+      border-radius:50%;
+      border:1px dashed rgba(255,46,166,.16);
+    }
+
+    .orbit-ring2{
+      width:820px;
+      height:820px;
+      border:1px dashed rgba(255,46,166,.10);
+      animation:spinCW 50s linear infinite;
+    }
+
+    .orbit-track-glow{
+      position:absolute;
+      width:740px;
+      height:740px;
+      border-radius:50%;
+      border:1px solid rgba(255,46,166,.08);
+      box-shadow:
+        0 0 24px rgba(255,46,166,.10),
+        inset 0 0 18px rgba(255,46,166,.04);
+      pointer-events:none;
+    }
+
+    /* car orbit system */
+    .car-orbit{
+      position:absolute;
+      width:900px;
+      height:900px;
+      animation:driveOrbit 14s linear infinite;
+      pointer-events:none;
+      z-index:3;
+    }
+
+    .car-anchor{
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:0;
+      transform:translate(-50%,-50%);
+    }
+
+    .car{
+      position:absolute;
+      left:0;
+      top:0;
+      width:165px;
+      transform:
+        translate(-50%, -50%)
+        translateY(-500px)
+        rotate(230deg);
+      transform-origin:center center;
+      filter:
+        drop-shadow(0 14px 20px rgba(0,0,0,.45))
+        drop-shadow(0 0 12px rgba(255,46,166,.18));
+    }
+.car::before{
+  animation:dustPulse .8s ease-in-out infinite alternate;
+}
+
+@keyframes dustPulse{
+  from{
+    opacity:.65;
+    filter:blur(10px);
+    transform:translate(-10%, -50%) scaleX(.92);
+  }
+  to{
+    opacity:1;
+    filter:blur(16px);
+    transform:translate(-14%, -50%) scaleX(1.08);
+  }
+}
+
+    .car img{
+      display:block;
+      width:100%;
+      height:auto;
+      object-fit:contain;
+      border-radius:12px;
+    }
+
+    /* fake motion trail */
+    .car-trail,
+    .car-trail::before,
+    .car-trail::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      top:50%;
+      width:90px;
+      height:18px;
+      border-radius:999px;
+      background:linear-gradient(90deg,
+        rgba(255,46,166,0),
+        rgba(255,46,166,.14),
+        rgba(255,46,166,.30),
+        rgba(255,46,166,0));
+      filter:blur(8px);
+      transform-origin:center center;
+      pointer-events:none;
+    }
+
+    .car-trail{
+      transform:
+        translate(-50%, -50%)
+        translateY(-360px)
+        rotate(90deg);
+      opacity:.9;
+    }
+
+    .car-trail::before{
+      transform:
+        translate(-50%, -50%)
+        translate(-8px, 26px);
+      opacity:.45;
+      filter:blur(12px);
+    }
+
+    .car-trail::after{
+      transform:
+        translate(-50%, -50%)
+        translate(8px, 50px);
+      opacity:.2;
+      filter:blur(16px);
+    }
+
+    .center-ui{
+      position:relative;
+      z-index:5;
+      width:min(820px, 92vw);
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:28px;
+    }
+
+    .logo-card{
+      width:min(520px, 86vw);
+      padding:26px 30px;
+      border-radius:30px;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.015));
+      border:1px solid var(--line);
+      backdrop-filter:blur(14px);
+      box-shadow:
+        0 20px 45px rgba(0,0,0,.35),
+        0 0 32px rgba(255,46,166,.10);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .logo-card::before{
+      content:"";
+      position:absolute;
+      inset:auto auto -40px -40px;
+      width:180px;
+      height:180px;
+      background:radial-gradient(circle, rgba(255,46,166,.14), transparent 70%);
+      pointer-events:none;
+    }
+
+    .logo-card img{
+      position:relative;
+      z-index:2;
+      width:min(380px, 75vw);
+      max-width:100%;
+      height:auto;
+      object-fit:contain;
+      filter:drop-shadow(0 10px 24px rgba(255,46,166,.18));
+    }
+
+    .button-row{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      gap:14px;
+      width:100%;
+    }
+
+    .nav-btn{
+      min-width:150px;
+      max-width:170px;
+      padding:16px 14px;
+      border-radius:20px;
+      background:linear-gradient(180deg, rgba(24,24,36,.92), rgba(15,15,24,.84));
+      border:1px solid var(--line);
+      color:var(--text);
+      text-decoration:none;
+      text-align:center;
+      transition:.18s ease;
+      box-shadow:0 12px 24px rgba(0,0,0,.32);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .nav-btn::before{
+      content:"";
+      position:absolute;
+      left:0;
+      top:0;
+      bottom:0;
+      width:3px;
+      background:linear-gradient(180deg, var(--pink), transparent);
+      opacity:.8;
+    }
+
+    .nav-btn:hover{
+      transform:translateY(-4px) scale(1.03);
+      border-color:rgba(255,46,166,.45);
+      box-shadow:
+        0 16px 28px rgba(0,0,0,.36),
+        0 0 20px rgba(255,46,166,.15);
+      background:linear-gradient(180deg, rgba(255,46,166,.10), rgba(18,18,28,.92));
+    }
+
+    .nav-btn .title{
+      font-size:13px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.4px;
+      margin-bottom:6px;
+    }
+
+    .nav-btn .desc{
+      font-size:11px;
+      line-height:1.35;
+      color:var(--muted);
+    }
+
+    .tagline{
+      padding:10px 14px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.08);
+      background:rgba(255,255,255,.03);
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.8px;
+      text-transform:uppercase;
+      backdrop-filter:blur(8px);
+    }
+
+    .tagline b{
+      color:var(--text);
+    }
+
+    @keyframes driveOrbit{
+      from{ transform:rotate(0deg); }
+      to{ transform:rotate(-360deg); }
+    }
+
+    @keyframes spinCW{
+      from{ transform:rotate(0deg); }
+      to{ transform:rotate(360deg); }
+    }
+
+    @media (max-width: 900px){
+      .orbit-ring{ width:560px; height:560px; }
+      .orbit-ring2{ width:660px; height:660px; }
+      .orbit-track-glow{ width:600px; height:600px; }
+      .car-orbit{ width:610px; height:610px; }
+
+      .car{
+        width:135px;
+        transform:
+          translate(-50%, -50%)
+          translateY(-305px)
+          rotate(90deg);
+      }
+
+      .car-trail{
+        transform:
+          translate(-50%, -50%)
+          translateY(-288px)
+          rotate(90deg);
+      }
+
+      .nav-btn{
+        min-width:140px;
+        max-width:160px;
+      }
+    }
+
+    @media (max-width: 700px){
+      body{
+        overflow:auto;
+        padding:20px 12px;
+      }
+
+      .scene{
+        width:100%;
+        height:auto;
+        min-height:auto;
+        padding:40px 0 20px;
+      }
+
+      .orbit-ring,
+      .orbit-ring2,
+      .orbit-track-glow,
+      .car-orbit{
+        display:none;
+      }
+
+      .center-ui{
+        gap:18px;
+      }
+
+      .logo-card{
+        padding:20px;
+        border-radius:24px;
+      }
+
+      .button-row{
+        display:grid;
+        grid-template-columns:1fr;
+        gap:12px;
+        max-width:360px;
+      }
+
+      .nav-btn{
+        max-width:none;
+        width:100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+
+    <div class="orbit-ring"></div>
+    <div class="orbit-track-glow"></div>
+    <div class="orbit-ring2"></div>
+
+    <div class="car-orbit">
+      <div class="car-anchor">
+        <div class="car-trail"></div>
+        <div class="car">
+          <img src="DND Splash Car.png" alt="Race car orbiting around menu">
+        </div>
+      </div>
+    </div>
+
+    <div class="center-ui">
+      <div class="logo-card">
+        <img src="logo.jpg" alt="DND Racing Logo">
+      </div>
+
+      <div class="button-row">
+        <a class="nav-btn" href="chassis-setup.html">
+          <div class="title">Chassis Set Up</div>
+          <div class="desc">Springs, shocks, heights, weights</div>
+        </a>
+
+        <a class="nav-btn" href="race-day-notes.html">
+          <div class="title">Race Day Notes</div>
+          <div class="desc">Track feel, handling, changes</div>
+        </a>
+
+        <a class="nav-btn" href="tire-logging.html">
+          <div class="title">Tire Logging</div>
+          <div class="desc">Pressure, wear, stagger, cycles</div>
+        </a>
+
+        <a class="nav-btn" href="maintenance-tracking.html">
+          <div class="title">Maintenance</div>
+          <div class="desc">Checks, repairs, weekly service</div>
+        </a>
+
+        <a class="nav-btn" href="race-results.html">
+          <div class="title">Race Results</div>
+          <div class="desc">Finishes, lap times, season data</div>
+        </a>
+      </div>
+
+      <div class="tagline">
+        <b>DND Racing</b> • Performance Hub
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

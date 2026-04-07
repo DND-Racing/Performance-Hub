@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DND Racing - Race Day Notebook</title>
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --panel:#141422;
+      --panel2:#10101a;
+      --text:#f3f3f7;
+      --muted:#b9b9c9;
+      --pink:#ff2ea6;
+      --pink2:#ff5cc1;
+      --line:#2a2a3b;
+      --good:#2effa6;
+      --bad:#ff8a8a;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        linear-gradient(rgba(8,8,14,0.85), rgba(8,8,14,0.92)),
+        url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
+      background-size:cover;
+      background-position:center;
+      background-repeat:no-repeat;
+      overflow:hidden;
+    }
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+      width:44px; height:44px; border-radius:12px;
+      background-image:url("logo.jpg");
+      background-size:cover; background-position:center; background-repeat:no-repeat;
+      box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+    }
+    h1{font-size:18px;margin:0;letter-spacing:.5px;}
+    .wrap{
+      max-width:1200px;
+      margin:0 auto;
+      padding:16px;
+      height:calc(100vh - 78px);
+      overflow-y:auto;
+      overflow-x:hidden;
+    }
+    .wrap::-webkit-scrollbar{width:18px;}
+    .wrap::-webkit-scrollbar-track{background:#08080e;}
+    .wrap::-webkit-scrollbar-thumb{background:#ff5cc1;border-radius:10px;border:2px solid #08080e;}
+    .grid,.row{display:grid;gap:10px;}
+    @media(min-width:640px){ .row.cols2{grid-template-columns:repeat(2,1fr);} }
+    @media(min-width:640px){ .row.cols4{grid-template-columns:repeat(4,1fr);} }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+      margin-bottom:14px;
+    }
+    .title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
+    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px;}
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    input, select, textarea{
+      width:100%;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px;
+      font-size:16px;
+      outline:none;
+    }
+    textarea{min-height:120px;resize:vertical;}
+    input:focus, select:focus, textarea:focus{
+      border-color:rgba(255,46,166,.7);
+      box-shadow:0 0 0 4px rgba(255,46,166,.15);
+    }
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    button, .btnlink{
+      border:none; cursor:pointer;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.4px;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+    .btn2,.btn3{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .status.good{color:var(--good);}
+    .status.bad{color:var(--bad);}
+    .bigstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;}
+    .stat{
+      flex:1;
+      min-width:180px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .stat .k{font-size:12px;color:var(--muted);}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
+    .v.good{color:var(--good);}
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div><h1>Race Day Notebook</h1></div>
+  </div>
+  <div class="btnbar">
+    <input type="file" id="csvLoader" accept=".csv" style="display:none">
+    <button class="btn2" type="button" id="loadBtn">Load Notes</button>
+    <button class="btn" type="button" id="saveBtn">Save Notes</button>
+    <a class="btn3 btnlink" href="DND%20Splash%20Screen.html">Return Home</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <div class="title"><h2>Event</h2><span class="pill">Overview</span></div>
+    <div class="row cols2">
+      <div><label>Date</label><input id="event_date" type="date"></div>
+      <div><label>Weather</label>
+        <select id="event_weather">
+          <option value="">Select...</option>
+          <option>Cloudy</option><option>Clear</option><option>Overcast</option>
+        </select>
+      </div>
+      <div><label>Track</label><input id="event_track" placeholder="Merrittville / Ohsweken / Ransomville / etc."></div>
+      <div><label>Car</label><input id="event_car" placeholder="Chassis #"></div>
+    </div>
+    <div style="margin-top:10px;"><label>General Notes</label><textarea id="event_notes" placeholder="Enter notes here"></textarea></div>
+  </div>
+
+  <div class="card" data-section="hl">
+    <div class="title"><h2>Hot Laps</h2><span class="pill">Session 1</span></div>
+    <div class="row cols2">
+      <div><label>Group</label><input id="hl_group" type="number"></div>
+      <div><label>Track Condition</label>
+        <select id="hl_track_cond">
+          <option value="">Select...</option>
+          <option>Wet</option><option>Tacky</option><option>Dry</option><option>Dry Black</option>
+        </select>
+      </div>
+      <div><label>Best Lap</label><input id="hl_best_lap" placeholder="Enter lap time"></div>
+      <div><label>Finish Position</label><input id="hl_finish_pos" type="number"></div>
+      <div><label>Gear Ratio</label><input id="hl_gear" type="number" step="0.01"></div>
+      <div><label>Fuel</label><input id="hl_fuel" type="number" step="0.1"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="title"><h2>Start Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="hl_tp_start_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="hl_tp_start_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="hl_tp_start_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="hl_tp_start_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>End Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="hl_tp_end_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="hl_tp_end_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="hl_tp_end_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="hl_tp_end_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>Tire Pressure Changes</h2></div>
+      <div class="bigstats">
+        <div class="stat"><div class="k">Left Front</div><div class="v good" id="hl_tp_delta_lf">—</div></div>
+        <div class="stat"><div class="k">Right Front</div><div class="v good" id="hl_tp_delta_rf">—</div></div>
+        <div class="stat"><div class="k">Left Rear</div><div class="v good" id="hl_tp_delta_lr">—</div></div>
+        <div class="stat"><div class="k">Right Rear</div><div class="v good" id="hl_tp_delta_rr">—</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Shock Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="hl_shock_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="hl_shock_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="hl_shock_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="hl_shock_rr" type="number" step="0.1"></div>
+      </div>
+    </div>
+
+    <div><label>Notes</label><textarea id="hl_notes" placeholder="Enter notes here"></textarea></div>
+  </div>
+
+  <div class="card" data-section="heat">
+    <div class="title"><h2>Heat</h2><span class="pill">Session 2</span></div>
+    <div class="row cols2">
+      <div><label>Start Position</label><input id="heat_start_pos" type="number"></div>
+      <div><label>Track Condition</label>
+        <select id="heat_track_cond">
+          <option value="">Select...</option>
+          <option>Wet</option><option>Tacky</option><option>Dry</option><option>Dry Black</option>
+        </select>
+      </div>
+      <div><label>Best Lap</label><input id="heat_best_lap" placeholder="Enter lap time"></div>
+      <div><label>Finish Position</label><input id="heat_finish_pos" type="number"></div>
+      <div><label>Gear Ratio</label><input id="heat_gear" type="number" step="0.01"></div>
+      <div><label>Fuel</label><input id="heat_fuel" type="number" step="0.1"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="title"><h2>Start Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="heat_tp_start_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="heat_tp_start_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="heat_tp_start_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="heat_tp_start_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>End Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="heat_tp_end_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="heat_tp_end_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="heat_tp_end_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="heat_tp_end_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>Tire Pressure Changes</h2></div>
+      <div class="bigstats">
+        <div class="stat"><div class="k">Left Front</div><div class="v good" id="heat_tp_delta_lf">—</div></div>
+        <div class="stat"><div class="k">Right Front</div><div class="v good" id="heat_tp_delta_rf">—</div></div>
+        <div class="stat"><div class="k">Left Rear</div><div class="v good" id="heat_tp_delta_lr">—</div></div>
+        <div class="stat"><div class="k">Right Rear</div><div class="v good" id="heat_tp_delta_rr">—</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Shock Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="heat_shock_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="heat_shock_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="heat_shock_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="heat_shock_rr" type="number" step="0.1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Tire Temperatures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="heat_temp_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="heat_temp_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="heat_temp_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="heat_temp_rr" type="number" step="0.1"></div>
+      </div>
+    </div>
+
+    <div><label>Notes</label><textarea id="heat_notes" placeholder="Enter notes here"></textarea></div>
+  </div>
+
+  <div class="card" data-section="feature">
+    <div class="title"><h2>Feature</h2><span class="pill">Session 3</span></div>
+    <div class="row cols2">
+      <div><label>Start Position</label><input id="feature_start_pos" type="number"></div>
+      <div><label>Track Condition</label>
+        <select id="feature_track_cond">
+          <option value="">Select...</option>
+          <option>Wet</option><option>Tacky</option><option>Dry</option><option>Dry Black</option>
+        </select>
+      </div>
+      <div><label>Best Lap</label><input id="feature_best_lap" placeholder="Enter lap time"></div>
+      <div><label>Finish Position</label><input id="feature_finish_pos" type="number"></div>
+      <div><label>Gear Ratio</label><input id="feature_gear" type="number" step="0.01"></div>
+      <div><label>Fuel</label><input id="feature_fuel" type="number" step="0.1"></div>
+    </div>
+
+    <div class="card" style="margin-top:12px;">
+      <div class="title"><h2>Start Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="feature_tp_start_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="feature_tp_start_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="feature_tp_start_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="feature_tp_start_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>End Tire Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="feature_tp_end_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="feature_tp_end_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="feature_tp_end_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="feature_tp_end_rr" type="number" step="0.1"></div>
+      </div>
+
+      <div class="title" style="margin-top:12px;"><h2>Tire Pressure Changes</h2></div>
+      <div class="bigstats">
+        <div class="stat"><div class="k">Left Front</div><div class="v good" id="feature_tp_delta_lf">—</div></div>
+        <div class="stat"><div class="k">Right Front</div><div class="v good" id="feature_tp_delta_rf">—</div></div>
+        <div class="stat"><div class="k">Left Rear</div><div class="v good" id="feature_tp_delta_lr">—</div></div>
+        <div class="stat"><div class="k">Right Rear</div><div class="v good" id="feature_tp_delta_rr">—</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Shock Pressures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="feature_shock_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="feature_shock_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="feature_shock_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="feature_shock_rr" type="number" step="0.1"></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Tire Temperatures</h2></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="feature_temp_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="feature_temp_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="feature_temp_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="feature_temp_rr" type="number" step="0.1"></div>
+      </div>
+    </div>
+
+    <div><label>Notes</label><textarea id="feature_notes" placeholder="Enter notes here"></textarea></div>
+  </div>
+
+  <div id="status" class="status">Ready.</div>
+</div>
+
+<script>
+  const FIELD_IDS = [
+    "event_date","event_weather","event_track","event_car","event_notes",
+    "hl_group","hl_track_cond","hl_best_lap","hl_finish_pos","hl_gear","hl_fuel",
+    "hl_tp_start_lf","hl_tp_start_rf","hl_tp_start_lr","hl_tp_start_rr",
+    "hl_tp_end_lf","hl_tp_end_rf","hl_tp_end_lr","hl_tp_end_rr",
+    "hl_shock_lf","hl_shock_rf","hl_shock_lr","hl_shock_rr","hl_notes",
+    "heat_start_pos","heat_track_cond","heat_best_lap","heat_finish_pos","heat_gear","heat_fuel",
+    "heat_tp_start_lf","heat_tp_start_rf","heat_tp_start_lr","heat_tp_start_rr",
+    "heat_tp_end_lf","heat_tp_end_rf","heat_tp_end_lr","heat_tp_end_rr",
+    "heat_shock_lf","heat_shock_rf","heat_shock_lr","heat_shock_rr",
+    "heat_temp_lf","heat_temp_rf","heat_temp_lr","heat_temp_rr","heat_notes",
+    "feature_start_pos","feature_track_cond","feature_best_lap","feature_finish_pos","feature_gear","feature_fuel",
+    "feature_tp_start_lf","feature_tp_start_rf","feature_tp_start_lr","feature_tp_start_rr",
+    "feature_tp_end_lf","feature_tp_end_rf","feature_tp_end_lr","feature_tp_end_rr",
+    "feature_shock_lf","feature_shock_rf","feature_shock_lr","feature_shock_rr",
+    "feature_temp_lf","feature_temp_rf","feature_temp_lr","feature_temp_rr","feature_notes"
+  ];
+
+  function el(id){ return document.getElementById(id); }
+
+  function setStatus(message, kind = "") {
+    const node = el("status");
+    node.textContent = message;
+    node.className = kind ? `status ${kind}` : "status";
+  }
+
+  function numValue(id){
+    const node = el(id);
+    if (!node || node.value === "") return null;
+    const n = Number(node.value);
+    return Number.isNaN(n) ? null : n;
+  }
+
+  function formatDelta(n){
+    if (n === null || n === undefined || Number.isNaN(n)) return "—";
+    return `${n.toFixed(1)} PSI`;
+  }
+
+  function updatePressureDelta(prefix){
+    const startLF = numValue(`${prefix}_tp_start_lf`);
+    const startRF = numValue(`${prefix}_tp_start_rf`);
+    const startLR = numValue(`${prefix}_tp_start_lr`);
+    const startRR = numValue(`${prefix}_tp_start_rr`);
+    const endLF = numValue(`${prefix}_tp_end_lf`);
+    const endRF = numValue(`${prefix}_tp_end_rf`);
+    const endLR = numValue(`${prefix}_tp_end_lr`);
+    const endRR = numValue(`${prefix}_tp_end_rr`);
+
+    const outputs = {
+      lf: el(`${prefix}_tp_delta_lf`),
+      rf: el(`${prefix}_tp_delta_rf`),
+      lr: el(`${prefix}_tp_delta_lr`),
+      rr: el(`${prefix}_tp_delta_rr`)
+    };
+
+    if ([startLF,startRF,startLR,startRR,endLF,endRF,endLR,endRR].some(v => v === null)) {
+      outputs.lf.textContent = "—";
+      outputs.rf.textContent = "—";
+      outputs.lr.textContent = "—";
+      outputs.rr.textContent = "—";
+      return;
+    }
+
+    outputs.lf.textContent = formatDelta(endLF - startLF);
+    outputs.rf.textContent = formatDelta(endRF - startRF);
+    outputs.lr.textContent = formatDelta(endLR - startLR);
+    outputs.rr.textContent = formatDelta(endRR - startRR);
+  }
+
+  function updateAllDeltas(){
+    ["hl","heat","feature"].forEach(updatePressureDelta);
+  }
+
+  function getFormData(){
+    const data = {};
+    FIELD_IDS.forEach(id => {
+      const node = el(id);
+      data[id] = node ? node.value : "";
+    });
+    return data;
+  }
+
+  function setFormData(data){
+    FIELD_IDS.forEach(id => {
+      const node = el(id);
+      if (node && Object.prototype.hasOwnProperty.call(data, id)) {
+        node.value = data[id];
+      }
+    });
+    updateAllDeltas();
+  }
+
+  function csvEscape(value){
+    return `"${String(value ?? "").replace(/"/g, '""')}"`;
+  }
+
+  function makeCSV(data){
+    const header = FIELD_IDS.join(",");
+    const row = FIELD_IDS.map(id => csvEscape(data[id])).join(",");
+    return `${header}\n${row}\n`;
+  }
+
+  function parseCSVLine(line){
+    const out = [];
+    let current = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuotes && line[i + 1] === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === "," && !inQuotes) {
+        out.push(current);
+        current = "";
+      } else {
+        current += ch;
+      }
+    }
+    out.push(current);
+    return out;
+  }
+
+  function safeName(value){
+    return String(value || "")
+      .trim()
+      .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_-]/g, "");
+  }
+
+  function save(){
+    try {
+      setStatus("Preparing CSV...");
+      const data = getFormData();
+      const csv = makeCSV(data);
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+
+      const date = safeName(data.event_date) || "no-date";
+      const track = safeName(data.event_track) || "no-track";
+      const car = safeName(data.event_car) || "no-car";
+      const filename = `${date}__${track}__${car}__race_day_notes.csv`;
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+      setStatus(`CSV downloaded: ${filename}`, "good");
+    } catch (err) {
+      console.error(err);
+      setStatus(`Save failed: ${err?.message || err}`, "bad");
+    }
+  }
+
+  function loadCSV(event){
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const text = String(e.target.result || "").trim();
+        const lines = text.split(/\r?\n/).filter(Boolean);
+        if (lines.length < 2) throw new Error("CSV file does not contain a header and data row.");
+
+        const headers = parseCSVLine(lines[0]);
+        const values = parseCSVLine(lines[1]);
+        const data = {};
+        headers.forEach((header, i) => {
+          data[header] = values[i] ?? "";
+        });
+
+        setFormData(data);
+        setStatus(`Loaded: ${file.name}`, "good");
+      } catch (err) {
+        console.error(err);
+        setStatus(`Load failed: ${err?.message || err}`, "bad");
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function openCSVPicker(){
+    const picker = el("csvLoader");
+    picker.value = "";
+    picker.click();
+  }
+
+  document.addEventListener("input", (e) => {
+    if (e.target && FIELD_IDS.includes(e.target.id)) {
+      updateAllDeltas();
+    }
+  });
+
+  el("saveBtn").addEventListener("click", save);
+  el("loadBtn").addEventListener("click", openCSVPicker);
+  el("csvLoader").addEventListener("change", loadCSV);
+
+  if (el("event_date")) {
+    el("event_date").valueAsDate = new Date();
+  }
+  updateAllDeltas();
+  setStatus("Ready.");
+</script>
+</body>
+</html>

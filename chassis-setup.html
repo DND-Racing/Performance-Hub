@@ -1,0 +1,763 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DND Racing - Setup Sheet</title>
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --panel:#141422;
+      --panel2:#10101a;
+      --text:#f3f3f7;
+      --muted:#b9b9c9;
+      --pink:#ff2ea6;
+      --pink2:#ff5cc1;
+      --line:#2a2a3b;
+      --good:#2effa6;
+    }
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;}
+   body{
+  margin:0;
+  color:var(--text);
+
+  background:
+    linear-gradient(
+      rgba(8,8,14,0.85),
+      rgba(8,8,14,0.92)
+    ),
+    url("./5cc237bb-ae93-412e-bb55-014983d6c98a.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+    header{
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
+      border-bottom:1px solid var(--line);
+      padding:14px 16px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+
+  background-image: url("logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
+    h1{font-size:18px;margin:0;letter-spacing:.5px;}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px;}
+    .wrap{max-width:1200px;margin:0 auto;padding:16px;}
+    .grid{display:grid;gap:14px;}
+    @media(min-width:980px){ .grid.cols2{grid-template-columns:1fr 1fr;} }
+    @media(min-width:980px){ .grid.cols3{grid-template-columns:1.2fr .8fr .8fr;} }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .title{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;}
+    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
+    .pill{font-size:12px;color:var(--muted);border:1px solid var(--line);padding:6px 10px;border-radius:999px;}
+    .row{display:grid;gap:10px;}
+    @media(min-width:640px){ .row.cols4{grid-template-columns:repeat(4,1fr);} }
+    @media(min-width:640px){ .row.cols2{grid-template-columns:repeat(2,1fr);} }
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+    input, select, textarea{
+      width:100%;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px 12px;
+      font-size:16px;
+      outline:none;
+    }
+    textarea{min-height:46px; resize:vertical;}
+    input:focus, select:focus, textarea:focus{border-color:rgba(255,46,166,.7); box-shadow:0 0 0 4px rgba(255,46,166,.15);}
+    .corner{
+      border:1px dashed rgba(255,46,166,.35);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,46,166,.04);
+    }
+    .corner h3{margin:0 0 10px 0;font-size:14px; letter-spacing:.4px;}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    button{
+      border:none; cursor:pointer;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+    .btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+    .btn2{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .bigstats{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+	.btn3{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+    .status{font-size:13px;color:var(--muted);margin-top:10px;}
+    .bigstats{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:8px;
+    }
+    .stat{
+      flex:1;
+      min-width:180px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+    .stat .k{font-size:12px;color:var(--muted);}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;}
+    .v.good{color:var(--good);}
+
+ .car-map{
+  display:grid;
+  grid-template-columns: 1fr 1.2fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px;
+  align-items: stretch;
+
+  grid-template-areas:
+    "lf car rf"
+    "lr car rr";
+}
+
+.car-center{
+  grid-area: car;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,46,166,.25);
+  border-radius:16px;
+  background: rgba(0,0,0,.20);
+  min-height: 420px;
+  position: relative;
+}
+
+.car-center img{
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  opacity: 0.95;
+}
+
+.corner-card{
+  border:1px dashed rgba(255,46,166,.35);
+  border-radius:16px;
+  padding:12px;
+  background: rgba(255,46,166,.04);
+}
+
+.corner-card h3{
+  margin:0 0 10px 0;
+  font-size:14px;
+  letter-spacing:.6px;
+}
+
+.corner-card.lf{ grid-area: lf; }
+.corner-card.rf{ grid-area: rf; }
+.corner-card.lr{ grid-area: lr; }
+.corner-card.rr{ grid-area: rr; }
+
+body{ overflow: hidden; }
+
+.wrap{
+	max-width:1200px;
+	margin:0 auto;
+	padding:16px;
+	padding-right: calc(100vw-1200px)/2 + 10px);
+	margin-right: calc(-1*((100vw-1200px)/2 + 10px));
+	
+	height: calc(100vh - 78px);
+	overflow-y: scroll;
+	overflow-x: hidden;
+}
+
+.wrap::-webkit-scrollbar{ width: 18px; }
+.wrap::-webkit-scrollbar-track{ 
+	background: #080808e; 
+}
+.wrap::-webkit-scrollbar-thumb{
+	background: #ff5cc1;
+	border-radius:10px;
+	border:2px solid #08080e;
+}
+.wrap::-webkit-scrollbar-thumb:hover{
+	background: #ff5cc1; 
+}
+.notesBox {
+    width: 600px;
+    height: 150px;
+    background: #080808e;
+    color: white;
+    border: 1px solid #2a2a3b;
+    padding: 10px;
+    resize: none;
+}
+
+/* Chrome, Edge, Safari */
+.notesBox::-webkit-scrollbar {
+    width: 12px;
+}
+
+.notesBox::-webkit-scrollbar-track {
+    background: #08080e;
+}
+
+.notesBox::-webkit-scrollbar-thumb {
+    background: #ff5cc1;
+    border-radius: 6px;
+}
+
+.notesBox::-webkit-scrollbar-thumb:hover {
+    background: #ff5cc1;
+}
+
+notesBox2 {
+    width: 1200px;
+    height: 150px;
+    background: #080808e;
+    color: white;
+    border: 1px solid #2a2a3b;
+    padding: 10px;
+    resize: none;
+}
+
+/* Chrome, Edge, Safari */
+.notesBox2::-webkit-scrollbar {
+    width: 12px;
+}
+
+.notesBox2::-webkit-scrollbar-track {
+    background: #08080e;
+}
+
+.notesBox2::-webkit-scrollbar-thumb {
+    background: #ff5cc1;
+    border-radius: 6px;
+}
+
+.notesBox2::-webkit-scrollbar-thumb:hover {
+    background: #ff5cc1;
+}
+
+ </style>
+</head>
+
+<body>
+<header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <h1>Chassis Setup Sheet</h1>
+    </div>
+  </div>
+  <div class="btnbar">
+  <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
+  <button class="btn2" onclick="openCSVPicker()">Load Setup</button>
+  <button class="btn" onclick="save()">Save Setup</button>
+  <button class="btn3" onclick="window.location.href='DND Splash Screen.html'">Return Home</button>
+  <div id="status" class="status"></div>
+</div>
+</header>
+
+<div class="wrap">
+  <div class="grid cols2">
+    <div class="card">
+      <div class="title"><h2>Event</h2><span class="pill">Meta</span></div>
+      <div class="row cols2">
+        <div><label>Date</label><input id="date" type="date"></div>
+        <div><label>Session</label>
+          <select id="session">
+            <option>Practice</option><option>Heat</option><option>Feature</option>
+          </select>
+        </div>
+        <div><label>Track</label><input id="track" placeholder="Merrittville/ Ohsweken / Ransomville / etc."></div>
+        <div><label>Car</label><input id="car" placeholder="Chassis #"></div>
+        </div>
+        <div><label>Notes</label><textarea class="notesBox" rows="6" id="notes" placeholder="Enter Notes Here"></textarea></div>
+    </div>
+
+    <div class="card">
+      <div class="title"><h2>Corner Scale Inputs</h2><span class="pill">Auto %</span></div>
+      <div class="row cols4">
+        <div><label>LF</label><input id="wt_lf" type="number" step="0.1"></div>
+        <div><label>RF</label><input id="wt_rf" type="number" step="0.1"></div>
+        <div><label>LR</label><input id="wt_lr" type="number" step="0.1"></div>
+        <div><label>RR</label><input id="wt_rr" type="number" step="0.1"></div>
+      </div>
+      <div class="bigstats">
+        <div class="stat"><div class="k">Total</div><div class="v" id="st_total">—</div></div>
+        <div class="stat"><div class="k">Left %</div><div class="v good" id="st_left">—</div></div>
+        <div class="stat"><div class="k">Rear %</div><div class="v good" id="st_rear">—</div></div>
+	<div class="stat"><div class="k">Cross %</div><div class="v good" id="st_cross">—</div></div>
+        <div class="stat"><div class="k">Wedge</div><div class="v good" id="st_wedge">—</div></div>
+      </div>
+      <div class="status">Tip: enter weights and the percentages will update automatically .</div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:12px; padding:12px;">
+  <div class="title"><h2>Corner Weight Adjustment Calculator</h2><span class="pill">Calculator</span></div>
+
+  <div class="row cols4">
+    <div><label>Target Left %</label><input id="t_left" type="number" step="0.01" placeholder="e.g. 52.00"></div>
+    <div><label>Target Rear %</label><input id="t_rear" type="number" step="0.01" placeholder="e.g. 48.00"></div>
+    <div><label>Target Cross %</label><input id="t_cross" type="number" step="0.01" placeholder="e.g. 54.50"></div>
+    <div><label>Target Wedge </label><input id="t_wedge_lb" type="number" step="0.01" placeholder="e.g 65 lbs)"></div>
+  </div>
+
+  <div class="bigstats" style="margin-top:10px;">
+    <div class="stat"><div class="k">Adjust LF Coil Nut </div><div class="v" id="d_lf">—</div></div>
+    <div class="stat"><div class="k">Adjust RF Coil Nut </div><div class="v" id="d_rf">—</div></div>
+    <div class="stat"><div class="k">Adjust LR Coil Nut</div><div class="v" id="d_lr">—</div></div>
+    <div class="stat"><div class="k">Adjust RR Coil Nut </div><div class="v" id="d_rr">—</div></div>
+  </div>
+
+  <div class="status" id="target_status">Enter targets to see required corner changes.</div>
+</div>
+
+ <div class="card" style="margin-top:14px;">
+  <div class="title">
+    <h2>4-Corner Setup</h2>
+    <span class="pill">Car Map View</span>
+  </div>
+
+  <div class="car-map">
+
+    <!-- Corner cards -->
+    <div class="corner-card lf">
+      <h3>LF</h3>
+      <div class="row cols2">
+        <div><label>Spring Rate</label><input id="spring_lf" type="number"></div>
+        <div><label>Smash #</label><input id="smash_lf" type="number"></div>
+        <div><label>Shock Type</label><input id="shock_lf"></div>
+        <div><label>Tire PSI</label><input id="psi_lf" type="number" step="0.1"></div>
+        <div><label>Frame Height</label><input id="fh_lf" type="number" step="0.01"></div>
+		<div><label>Caster</label><input id="rr_re_off" type="number"></div>
+      </div>
+    </div>
+
+    <div class="corner-card rf">
+      <h3>RF</h3>
+      <div class="row cols2">
+        <div><label>Spring Rate</label><input id="spring_rf" type="number"></div>
+        <div><label>Smash #</label><input id="smash_rf" type="number"></div>
+        <div><label>Shock Type</label><input id="shock_rf"></div>
+        <div><label>Tire PSI</label><input id="psi_rf" type="number" step="0.1"></div>
+        <div><label>Frame Height</label><input id="fh_rf" type="number" step="0.01"></div>
+		<div><label>Caster</label><input id="rr_re_off" type="number"></div>
+      </div>
+    </div>
+
+    <div class="corner-card lr">
+      <h3>LR</h3>
+      <div class="row cols2">
+        <div><label>Spring Rate</label><input id="spring_lr" type="number"></div>
+        <div><label>Smash #</label><input id="smash_lr" type="number"></div>
+        <div><label>Shock Type</label><input id="shock_lr"></div>
+        <div><label>Tire PSI</label><input id="psi_lr" type="number" step="0.1"></div>
+        <div><label>Frame Height</label><input id="fh_lr" type="number" step="0.01"></div>
+		<div><label>Radius Rod Rearend</label><select id="pan_l_inner"><option></option><option>Top</option><option>Middle</option><option>Bottom</option></select></div>
+        <div><label>Radius Rod Frame</label><select id="pan_l_outer"><option></option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+		<div><label>Panhard Inner</label><select id="pan_l_inner"><option></option><option>Top</option><option>Middle</option><option>Bottom</option></select></div>
+        <div><label>Pan Hard Outer</label><select id="pan_l_outer"><option></option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+		<div><label>Rear End Offset</label><input id="rr_re_off" type="number"></div>
+		</div>
+    </div>
+
+    <div class="corner-card rr">
+      <h3>RR</h3>
+      <div class="row cols2">
+        <div><label>Spring Rate</label><input id="spring_rr" type="number"></div>
+        <div><label>Smash #</label><input id="smash_rr" type="number"></div>
+        <div><label>Shock Type</label><input id="shock_rr"></div>
+        <div><label>Tire PSI</label><input id="psi_rr" type="number" step="0.1"></div>
+        <div><label>Frame Height</label><input id="fh_rr" type="number" step="0.01"></div>
+		<div><label>Radius Rod Rearend</label><select id="pan_l_inner"><option></option><option>Top</option><option>Middle</option><option>Bottom</option></select></div>
+        <div><label>Radius Rod Frame</label><select id="pan_l_outer"><option></option><option>1</option><option>2</option><option>3</option></select></div>
+		<div><label>Rear End Offset</label><input id="rr_re_off" type="number"></div>
+      </div>
+    </div>
+
+    <!-- Car image in the center -->
+    <div class="car-center">
+      <img src="Top Down Car.JPEG" alt="Car top view">
+    </div>
+
+  </div>
+</div>
+
+  <div class="card" style="margin-top:14px;">
+    <div class="title"><h2>Set Up Notes</h2></div>
+	<div><textarea class="notesBox2" rows="6" id="notes" placeholder="Enter Notes Here"></textarea></div>
+  </div>
+  
+ 
+
+</div>
+
+
+<script>
+const ids = [
+  "date","track","session","car",
+  "spring_lf","spring_rf","spring_lr","spring_rr",
+  "shock_lf","shock_rf","shock_lr","shock_rr",
+  "smash_lf","smash_rf","smash_lr","smash_rr",
+  "wt_lf","wt_rf","wt_lr","wt_rr",
+  "fh_lf","fh_rf","fh_lr","fh_rr",
+  "psi_lf","psi_rf","psi_lr","psi_rr",
+  "pan_l_inner","pan_l_outer","pan_r_inner","pan_r_outer",
+  "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_rear"
+];
+
+function el(id){ return document.getElementById(id); }
+
+function numVal(id){
+  const v = el(id).value;
+  return v === "" ? null : Number(v);
+}
+
+function fmt(n, digits=2){
+  if (n === null || n === undefined || Number.isNaN(n)) return "—";
+  return Number(n).toFixed(digits);
+}
+
+function updateStatsLive(){
+  const wt_lf = numVal("wt_lf");
+  const wt_rf = numVal("wt_rf");
+  const wt_lr = numVal("wt_lr");
+  const wt_rr = numVal("wt_rr");
+
+  // If any missing, show placeholders
+  if ([wt_lf, wt_rf, wt_lr, wt_rr].some(v => v === null)) {
+    el("st_total").textContent = "—";
+    el("st_left").textContent  = "—";
+    el("st_rear").textContent  = "—";
+    el("st_cross").textContent = "—";
+    el("st_wedge").textContent = "—";
+    return;
+  }
+
+  const total = wt_lf + wt_rf + wt_lr + wt_rr;
+  if (total <= 0) {
+    el("st_total").textContent = fmt(total, 1);
+    el("st_left").textContent  = "—";
+    el("st_rear").textContent  = "—";
+    el("st_cross").textContent = "—";
+    el("st_wedge").textContent = "—";
+    return;
+  }
+
+  const leftPct  = ((wt_lf + wt_lr) / total) * 100;
+  const rearPct  = ((wt_lr + wt_rr) / total) * 100;
+  const crossPct = ((wt_rf + wt_lr) / total) * 100; // RF+LR cross
+  const wedge = (wt_lr-wt_rr);
+
+  el("st_total").textContent = fmt(total, 1);
+  el("st_left").textContent  = fmt(leftPct, 2) + "%";
+  el("st_rear").textContent  = fmt(rearPct, 2) + "%";
+  el("st_cross").textContent = fmt(crossPct, 2) + "%";
+  el("st_wedge").textContent = fmt(wedge, 2) + "lbs";
+}
+
+
+function getDataAsStrings(){
+  const d = {};
+  ids.forEach(id => {
+    const node = el(id);
+    d[id] = node ? (node.value ?? "") : "";   // <-- prevents null.value crash
+  });
+  return d;
+}
+
+function valOrEmpty(id){
+  const n = el(id);
+  return n ? (n.value ?? "") : "";
+}
+
+function computeAdjustments(){
+  const lf = numVal("wt_lf");
+  const rf = numVal("wt_rf");
+  const lr = numVal("wt_lr");
+  const rr = numVal("wt_rr");
+
+  const out = (id, txt) => {
+    const n = el(id);
+    if (n) n.textContent = txt;
+  };
+
+  if ([lf, rf, lr, rr].some(v => v === null)) {
+    out("d_lf","—"); out("d_rf","—"); out("d_lr","—"); out("d_rr","—");
+    out("target_status","Enter all four corner weights first.");
+    return;
+  }
+
+  const T = lf + rf + lr + rr;
+  if (T <= 0) {
+    out("d_lf","—"); out("d_rf","—"); out("d_lr","—"); out("d_rr","—");
+    out("target_status","Total weight must be > 0.");
+    return;
+  }
+
+  const tLeftStr  = valOrEmpty("t_left");
+  const tRearStr  = valOrEmpty("t_rear");
+  const tWedgeStr = valOrEmpty("t_wedge_lb");
+
+  const tLeft = tLeftStr === "" ? NaN : parseFloat(tLeftStr);
+  const tRear = tRearStr === "" ? NaN : parseFloat(tRearStr);
+  const tWedgeLb = tWedgeStr === "" ? NaN : parseFloat(tWedgeStr);
+
+  if (Number.isNaN(tLeft) || Number.isNaN(tRear) || Number.isNaN(tWedgeLb)) {
+    out("d_lf","—"); out("d_rf","—"); out("d_lr","—"); out("d_rr","—");
+    out("target_status","Enter Target Left %, Target Rear %, and Target Wedge (LR−RR) lb.");
+    return;
+  }
+
+  // Targets
+  const leftTarget = (tLeft/100) * T;   // LF+LR
+  const rearTarget = (tRear/100) * T;   // LR+RR
+
+  const leftNow = lf + lr;
+  const rearNow = lr + rr;
+
+  const dLeft = leftTarget - leftNow;
+  const dRear = rearTarget - rearNow;
+
+  // Wedge: LR - RR (lb)
+  const wedgeNow = lr - rr;
+  const dWedge = tWedgeLb - wedgeNow;   // want: (dLR - dRR) = dWedge
+
+  // Solve (lb)
+  const dLR = (dRear + dWedge) / 2;
+  const dRR = (dRear - dWedge) / 2;
+  const dLF = dLeft - dLR;
+  const dRF = -(dLF + dLR + dRR);
+
+  // ---- Convert lb -> turns (1 turn = 12 lb) ----
+  const LB_PER_TURN = 12;
+
+  const roundToQuarter = (turns) => Math.round(turns * 4) / 4;
+
+  const fmtTurns = (lb) => {
+    let turns = lb / LB_PER_TURN;
+    turns = roundToQuarter(turns);
+
+    const dir = turns > 0 ? "Tighten" : turns < 0 ? "Loosen" : "No change";
+    const absTurns = Math.abs(turns);
+
+    if (dir === "No change") return "0 turns";
+    return `${dir} ${absTurns} turns`;
+  };
+
+  // Output (turns + lb in parentheses)
+  out("d_lf", `${fmtTurns(dLF)} (${(dLF>=0?"+":"") + fmt(dLF,1)} lb)`);
+  out("d_rf", `${fmtTurns(dRF)} (${(dRF>=0?"+":"") + fmt(dRF,1)} lb)`);
+  out("d_lr", `${fmtTurns(dLR)} (${(dLR>=0?"+":"") + fmt(dLR,1)} lb)`);
+  out("d_rr", `${fmtTurns(dRR)} (${(dRR>=0?"+":"") + fmt(dRR,1)} lb)`);
+
+  const sum = dLF + dRF + dLR + dRR;
+  out("target_status", `Needed corner changes shown as coil nut turns (1 turn = ${LB_PER_TURN} lb). Total change check: ${fmt(sum,1)} (should be ~0).`);
+}
+function calcStatsForSave(d){
+  const wt_lf = d.wt_lf === "" ? null : Number(d.wt_lf);
+  const wt_rf = d.wt_rf === "" ? null : Number(d.wt_rf);
+  const wt_lr = d.wt_lr === "" ? null : Number(d.wt_lr);
+  const wt_rr = d.wt_rr === "" ? null : Number(d.wt_rr);
+
+  if ([wt_lf, wt_rf, wt_lr, wt_rr].some(v => v === null || Number.isNaN(v))) {
+    return { total_wt:"", left_pct:"", rear_pct:"" };
+  }
+
+  const total = wt_lf + wt_rf + wt_lr + wt_rr;
+  if (total <= 0) return { total_wt:String(total), left_pct:"", rear_pct:"" };
+
+  const leftPct = ((wt_lf + wt_lr) / total) * 100;
+  const rearPct = ((wt_lr + wt_rr) / total) * 100;
+  const crossPct = ((wt_rf + wt_lr) / total) * 100;
+
+  return {
+    total_wt: total.toFixed(1),
+    left_pct: leftPct.toFixed(2),
+    rear_pct: rearPct.toFixed(2),
+  };
+}
+
+function toCSVRow(values){
+  return values.map(v => {
+    const s = String(v ?? "");
+    const escaped = s.replace(/"/g, '""');   // instead of replaceAll
+    return `"${escaped}"`;
+  }).join(",");
+}
+function safeName(s){
+  return String(s || "")
+    .trim()
+    .replace(/ /g, "_")              // instead of replaceAll(" ", "_")
+    .replace(/[^a-zA-Z0-9_\-]/g, ""); // keep safe filename chars only
+}
+
+function save(){
+  const status = el("status");
+
+  try {
+    if (status) status.textContent = "Preparing CSV...";
+
+    const d = getDataAsStrings();
+    const stats = calcStatsForSave(d);
+
+    d.total_wt = stats.total_wt;
+    d.left_pct = stats.left_pct;
+    d.rear_pct = stats.rear_pct;
+
+    const columns = [
+      "date","track","session","car",
+      "spring_lf","spring_rf","spring_lr","spring_rr",
+      "shock_lf","shock_rf","shock_lr","shock_rr",
+      "smash_lf","smash_rf","smash_lr","smash_rr",
+      "wt_lf","wt_rf","wt_lr","wt_rr","total_wt","left_pct","rear_pct",
+      "fh_lf","fh_rf","fh_lr","fh_rr",
+      "psi_lf","psi_rf","psi_lr","psi_rr",
+      "pan_l_inner","pan_l_outer","pan_r_inner","pan_r_outer",
+      "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_rear"
+    ];
+
+    const header = columns.join(",");
+    const row = toCSVRow(columns.map(c => d[c] ?? ""));
+    const csv = header + "\n" + row + "\n";
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+
+    const date = safeName(d.date) || "no-date";
+    const track = safeName(d.track) || "no-track";
+    const sess = safeName(d.session) || "no-session";
+    const car = safeName(d.car) || "no-car";
+    const filename = `${date}__${track}__${sess}__${car}.csv`;
+
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+
+    if (status) status.textContent = `CSV downloaded: ${filename}`;
+  } catch (err) {
+    if (status) {
+      status.textContent = "Save failed: " + (err?.message || err);
+    } else {
+      console.error("Save failed:", err);
+    }
+    console.error(err);
+  }
+}
+/* ---------- CSV LOADING ---------- */
+
+function setDataFromObject(obj){
+  ids.forEach(id=>{
+    if (obj[id] !== undefined) el(id).value = obj[id];
+  });
+  updateStatsLive();
+}
+
+function parseCSVLine(line){
+  // Simple CSV parser for one row with quotes
+  const out = [];
+  let cur = "", inQuotes = false;
+  for (let i=0; i<line.length; i++){
+    const ch = line[i];
+    if (ch === '"' && line[i+1] === '"'){ cur += '"'; i++; continue; }
+    if (ch === '"'){ inQuotes = !inQuotes; continue; }
+    if (ch === ',' && !inQuotes){ out.push(cur); cur = ""; continue; }
+    cur += ch;
+  }
+  out.push(cur);
+  return out;
+}
+
+function loadCSV(event){
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const text = e.target.result.trim();
+    const lines = text.split(/\r?\n/);
+    if (lines.length < 2) {
+      el("status").textContent = "CSV file doesn't look valid.";
+      return;
+    }
+
+    const headers = parseCSVLine(lines[0]);
+    const values  = parseCSVLine(lines[1]);
+
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = values[i] ?? "");
+
+    setDataFromObject(obj);
+    el("status").textContent = "Loaded: " + file.name;
+  };
+
+  reader.readAsText(file);
+}
+
+function openCSVPicker(){
+  el("csvLoader").value = ""; // allow re-loading same file
+  el("csvLoader").click();
+}
+
+/* ---------- INIT ---------- */
+// INIT
+
+el("date").valueAsDate = new Date();
+
+// Weight listeners → update stats + adjustments
+["wt_lf","wt_rf","wt_lr","wt_rr"].forEach(id => {
+  const node = el(id);
+  if (node) node.addEventListener("input", () => {
+    updateStatsLive();
+    computeAdjustments();
+  });
+});
+
+// Target listeners → update adjustments
+["t_left","t_rear","t_cross","t_wedge_lb"].forEach(id => {
+  const node = el(id);
+  if (node) node.addEventListener("input", computeAdjustments);
+});
+
+// Run once at startup
+updateStatsLive();
+computeAdjustments();
+</script></script>
+</body>
+</html>
