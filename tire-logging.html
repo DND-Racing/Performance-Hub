@@ -652,339 +652,467 @@
     <button class="btn2" style="margin-top:15px;" type="button" onclick="stopScanner()">Cancel</button>
   </div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const storageKey = 'dnd_tire_logger_entries';
-    const corners = ['lf','rf','lr','rr'];
-    const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
+ <script>
+  const $ = (id) => document.getElementById(id);
+  const storageKey = 'dnd_tire_logger_entries';
+  const corners = ['lf','rf','lr','rr'];
+  const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
 
-    let entries = [];
-    let qrScannerInstance = null;
-    let activeCorner = null;
-    let scanMode = null;
-    let scannerStarting = false;
+  let entries = [];
+  let qrScannerInstance = null;
+  let activeCorner = null;
+  let scanMode = null;
+  let scannerStarting = false;
 
-    function setToday() {
-      const today = new Date();
-      const y = today.getFullYear();
-      const m = String(today.getMonth() + 1).padStart(2, '0');
-      const d = String(today.getDate()).padStart(2, '0');
-      $('date').value = `${y}-${m}-${d}`;
-    }
+  function setToday() {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    $('date').value = `${y}-${m}-${d}`;
+  }
 
-    function num(v) {
-      if (v === '' || v === null || v === undefined) return '';
-      const n = parseFloat(v);
-      return Number.isFinite(n) ? n : '';
-    }
+  function num(v) {
+    if (v === '' || v === null || v === undefined) return '';
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : '';
+  }
 
-    function fmt(v, digits = 1) {
-      return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
-    }
+  function fmt(v, digits = 1) {
+    return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
+  }
 
-    function setStatus(message, isWarn = false) {
-      const el = $('status');
-      el.textContent = message;
-      el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
-    }
+  function setStatus(message, isWarn = false) {
+    const el = $('status');
+    el.textContent = message;
+    el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
+  }
 
-    function readSessionHeader() {
-      return {
-        date: $('date').value,
-        track: $('track').value.trim(),
-        event: $('event').value.trim(),
-        session: $('session').value,
-        car: $('car').value.trim(),
-        driver: $('driver').value.trim(),
-        track_temp: num($('airTrack').value),
-        air_temp: num($('airAmbient').value),
-        notes: $('sessionNotes').value.trim()
-      };
-    }
+  function readSessionHeader() {
+    return {
+      date: $('date').value,
+      track: $('track').value.trim(),
+      event: $('event').value.trim(),
+      session: $('session').value,
+      car: $('car').value.trim(),
+      driver: $('driver').value.trim(),
+      track_temp: num($('airTrack').value),
+      air_temp: num($('airAmbient').value),
+      notes: $('sessionNotes').value.trim()
+    };
+  }
 
-    function readCorner(corner) {
-      return {
-        corner: cornerNames[corner],
-        brand: $(`${corner}_brand`).value.trim(),
-        compound: $(`${corner}_compound`).value.trim(),
-        serial: $(`${corner}_serial`).value.trim(),
-        cold_psi: num($(`${corner}_cold`).value),
-        hot_psi: num($(`${corner}_hot`).value),
-        circumference: num($(`${corner}_circ`).value),
-        stagger: num($(`${corner}_stagger`).value),
-        temp_inner: num($(`${corner}_tread_i`).value),
-        temp_center: num($(`${corner}_tread_c`).value),
-        temp_outer: num($(`${corner}_tread_o`).value)
-      };
-    }
+  function readCorner(corner) {
+    return {
+      corner: cornerNames[corner],
+      brand: $(`${corner}_brand`).value.trim(),
+      compound: $(`${corner}_compound`).value.trim(),
+      serial: $(`${corner}_serial`).value.trim(),
+      cold_psi: num($(`${corner}_cold`).value),
+      hot_psi: num($(`${corner}_hot`).value),
+      circumference: num($(`${corner}_circ`).value),
+      stagger: num($(`${corner}_stagger`).value),
+      temp_inner: num($(`${corner}_tread_i`).value),
+      temp_center: num($(`${corner}_tread_c`).value),
+      temp_outer: num($(`${corner}_tread_o`).value)
+    };
+  }
 
-    function hasCornerData(cornerData) {
-      return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
-    }
+  function hasCornerData(cornerData) {
+    return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
+  }
 
-    function addSession() {
-      const header = readSessionHeader();
-      const newRows = [];
+  function addSession() {
+    const header = readSessionHeader();
+    const newRows = [];
 
-      for (const c of corners) {
-        const cornerData = readCorner(c);
-        if (hasCornerData(cornerData)) {
-          newRows.push({ ...header, ...cornerData });
-        }
-      }
-
-      if (!newRows.length) {
-        setStatus('Enter data in at least one tire corner before adding.', true);
-        return;
-      }
-
-      entries = [...entries, ...newRows];
-      persist();
-      render();
-      setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
-    }
-
-    function persist() {
-      localStorage.setItem(storageKey, JSON.stringify(entries));
-    }
-
-    function loadStored() {
-      try {
-        const raw = localStorage.getItem(storageKey);
-        entries = raw ? JSON.parse(raw) : [];
-      } catch {
-        entries = [];
+    for (const c of corners) {
+      const cornerData = readCorner(c);
+      if (hasCornerData(cornerData)) {
+        newRows.push({ ...header, ...cornerData });
       }
     }
 
-    function updateStats() {
-      $('statCount').textContent = String(entries.length);
-
-      const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
-      const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
-      const growthVals = entries
-        .map(r => {
-          const hot = Number(r.hot_psi);
-          const cold = Number(r.cold_psi);
-          return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
-        })
-        .filter(Number.isFinite);
-
-      const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
-      $('statCold').textContent = fmt(avg(coldVals), 1);
-      $('statHot').textContent = fmt(avg(hotVals), 1);
-      $('statGrowth').textContent = fmt(avg(growthVals), 3);
+    if (!newRows.length) {
+      setStatus('Enter data in at least one tire corner before adding.', true);
+      return;
     }
 
-    function safeVal(value) {
-      return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
+    entries = [...entries, ...newRows];
+    persist();
+    render();
+    setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
+  }
+
+  function persist() {
+    localStorage.setItem(storageKey, JSON.stringify(entries));
+  }
+
+  function loadStored() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      entries = raw ? JSON.parse(raw) : [];
+    } catch {
+      entries = [];
     }
+  }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
+  function updateStats() {
+    $('statCount').textContent = String(entries.length);
 
-    function render() {
-      const tbody = $('logBody');
-      tbody.innerHTML = '';
+    const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
+    const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
+    const growthVals = entries
+      .map(r => {
+        const hot = Number(r.hot_psi);
+        const cold = Number(r.cold_psi);
+        return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
+      })
+      .filter(Number.isFinite);
 
-      if (!entries.length) {
-        $('logEmpty').style.display = 'block';
-        $('tableWrap').style.display = 'none';
-        updateStats();
-        return;
-      }
+    const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+    $('statCold').textContent = fmt(avg(coldVals), 1);
+    $('statHot').textContent = fmt(avg(hotVals), 1);
+    $('statGrowth').textContent = fmt(avg(growthVals), 3);
+  }
 
-      $('logEmpty').style.display = 'none';
-      $('tableWrap').style.display = 'block';
+  function safeVal(value) {
+    return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
+  }
 
-      for (const row of entries) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(row.date || '')}</td>
-          <td>${escapeHtml(row.track || '')}</td>
-          <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
-          <td>${escapeHtml(row.corner || '')}</td>
-          <td>${escapeHtml(row.brand || '')}</td>
-          <td>${escapeHtml(row.compound || '')}</td>
-          <td>${safeVal(row.cold_psi)}</td>
-          <td>${safeVal(row.hot_psi)}</td>
-          <td>${safeVal(row.circumference)}</td>
-          <td>${safeVal(row.stagger)}</td>
-          <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
-          <td>${escapeHtml(row.serial || '')}</td>
-        `;
-        tbody.appendChild(tr);
-      }
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
 
+  function render() {
+    const tbody = $('logBody');
+    tbody.innerHTML = '';
+
+    if (!entries.length) {
+      $('logEmpty').style.display = 'block';
+      $('tableWrap').style.display = 'none';
       updateStats();
+      return;
     }
 
-    function clearForm() {
-      document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
-        if (el.id !== 'date') el.value = '';
-      });
-      $('session').selectedIndex = 0;
-      setToday();
-      clearPitCrewInfo();
-      setStatus('Form cleared.');
+    $('logEmpty').style.display = 'none';
+    $('tableWrap').style.display = 'block';
+
+    for (const row of entries) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(row.date || '')}</td>
+        <td>${escapeHtml(row.track || '')}</td>
+        <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
+        <td>${escapeHtml(row.corner || '')}</td>
+        <td>${escapeHtml(row.brand || '')}</td>
+        <td>${escapeHtml(row.compound || '')}</td>
+        <td>${safeVal(row.cold_psi)}</td>
+        <td>${safeVal(row.hot_psi)}</td>
+        <td>${safeVal(row.circumference)}</td>
+        <td>${safeVal(row.stagger)}</td>
+        <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
+        <td>${escapeHtml(row.serial || '')}</td>
+      `;
+      tbody.appendChild(tr);
     }
 
-    function toCSV(rows) {
-      const headers = [
-        'date','track','event','session','car','driver','track_temp','air_temp','notes',
-        'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
-        'temp_inner','temp_center','temp_outer'
-      ];
+    updateStats();
+  }
 
-      const esc = (v) => {
-        const s = v === null || v === undefined ? '' : String(v);
-        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-      };
+  function clearForm() {
+    document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
+      if (el.id !== 'date') el.value = '';
+    });
+    $('session').selectedIndex = 0;
+    setToday();
+    clearPitCrewInfo();
+    setStatus('Form cleared.');
+  }
 
-      const lines = [headers.join(',')];
-      for (const row of rows) {
-        lines.push(headers.map(h => esc(row[h])).join(','));
-      }
-      return lines.join('\n');
+  function toCSV(rows) {
+    const headers = [
+      'date','track','event','session','car','driver','track_temp','air_temp','notes',
+      'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
+      'temp_inner','temp_center','temp_outer'
+    ];
+
+    const esc = (v) => {
+      const s = v === null || v === undefined ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+
+    const lines = [headers.join(',')];
+    for (const row of rows) {
+      lines.push(headers.map(h => esc(row[h])).join(','));
     }
+    return lines.join('\n');
+  }
 
-    function downloadCSV() {
-      if (!entries.length) {
-        setStatus('There is no data to export yet.', true);
-        return;
-      }
-      const csv = toCSV(entries);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const stamp = $('date').value || 'tire-log';
-      a.href = url;
-      a.download = `dnd-tire-log-${stamp}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setStatus('CSV saved.');
+  function downloadCSV() {
+    if (!entries.length) {
+      setStatus('There is no data to export yet.', true);
+      return;
     }
+    const csv = toCSV(entries);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = $('date').value || 'tire-log';
+    a.href = url;
+    a.download = `dnd-tire-log-${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    setStatus('CSV saved.');
+  }
 
-    function parseCSV(text) {
-      const rows = [];
-      let row = [];
-      let cell = '';
-      let inQuotes = false;
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let inQuotes = false;
 
-      for (let i = 0; i < text.length; i++) {
-        const ch = text[i];
-        const next = text[i + 1];
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
 
-        if (ch === '"') {
-          if (inQuotes && next === '"') {
-            cell += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (ch === ',' && !inQuotes) {
-          row.push(cell);
-          cell = '';
-        } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
-          if (ch === '\r' && next === '\n') i++;
-          row.push(cell);
-          if (row.some(v => v !== '')) rows.push(row);
-          row = [];
-          cell = '';
+      if (ch === '"') {
+        if (inQuotes && next === '"') {
+          cell += '"';
+          i++;
         } else {
-          cell += ch;
+          inQuotes = !inQuotes;
         }
-      }
-
-      if (cell !== '' || row.length) {
+      } else if (ch === ',' && !inQuotes) {
+        row.push(cell);
+        cell = '';
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+        if (ch === '\r' && next === '\n') i++;
         row.push(cell);
         if (row.some(v => v !== '')) rows.push(row);
+        row = [];
+        cell = '';
+      } else {
+        cell += ch;
       }
-
-      return rows;
     }
 
-    function loadCSVFile(file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const text = String(reader.result || '');
-          if (!text.trim()) {
-            setStatus('The selected CSV file is empty.', true);
-            return;
-          }
+    if (cell !== '' || row.length) {
+      row.push(cell);
+      if (row.some(v => v !== '')) rows.push(row);
+    }
 
-          const parsed = parseCSV(text);
-          if (!parsed.length) {
-            setStatus('Could not read that CSV file.', true);
-            return;
-          }
+    return rows;
+  }
 
-          const headers = parsed[0];
-          const rows = [];
-
-          for (let i = 1; i < parsed.length; i++) {
-            const values = parsed[i];
-            const row = {};
-            headers.forEach((h, idx) => row[h] = values[idx] ?? '');
-            rows.push(row);
-          }
-
-          entries = rows;
-          persist();
-          render();
-          setStatus(`Loaded ${rows.length} rows from CSV.`);
-        } catch (err) {
-          console.error(err);
-          setStatus('Could not read that CSV file.', true);
+  function loadCSVFile(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        const text = String(reader.result || '');
+        if (!text.trim()) {
+          setStatus('The selected CSV file is empty.', true);
+          return;
         }
-      };
-      reader.readAsText(file);
+
+        const parsed = parseCSV(text);
+        if (!parsed.length) {
+          setStatus('Could not read that CSV file.', true);
+          return;
+        }
+
+        const headers = parsed[0];
+        const rows = [];
+
+        for (let i = 1; i < parsed.length; i++) {
+          const values = parsed[i];
+          const row = {};
+          headers.forEach((h, idx) => row[h] = values[idx] ?? '');
+          rows.push(row);
+        }
+
+        entries = rows;
+        persist();
+        render();
+        setStatus(`Loaded ${rows.length} rows from CSV.`);
+      } catch (err) {
+        console.error(err);
+        setStatus('Could not read that CSV file.', true);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  function openCSVPicker() {
+    $('csvLoader').click();
+  }
+
+  function loadCSV(event) {
+    const file = event.target.files?.[0];
+    if (file) loadCSVFile(file);
+    event.target.value = '';
+  }
+
+  function showPitCrewInfo(row) {
+    $('pitCrewEmpty').style.display = 'none';
+    $('pitCrewCard').style.display = 'block';
+
+    $('pitSerial').textContent = row.serial || '-';
+    $('pitCorner').textContent = row.corner || '-';
+    $('pitSession').textContent = row.session || '-';
+    $('pitDate').textContent = row.date || '-';
+
+    $('pitCold').textContent = row.cold_psi !== '' ? row.cold_psi : '-';
+    $('pitHot').textContent = row.hot_psi !== '' ? row.hot_psi : '-';
+
+    $('pitInner').textContent = row.temp_inner !== '' ? row.temp_inner : '-';
+    $('pitCenter').textContent = row.temp_center !== '' ? row.temp_center : '-';
+    $('pitOuter').textContent = row.temp_outer !== '' ? row.temp_outer : '-';
+
+    $('pitNotes').textContent = row.notes && String(row.notes).trim()
+      ? row.notes
+      : 'No notes saved for this tire.';
+  }
+
+  function clearPitCrewInfo() {
+    $('pitCrewEmpty').style.display = 'block';
+    $('pitCrewCard').style.display = 'none';
+    $('pitSerial').textContent = '-';
+    $('pitCorner').textContent = '-';
+    $('pitSession').textContent = '-';
+    $('pitDate').textContent = '-';
+    $('pitCold').textContent = '-';
+    $('pitHot').textContent = '-';
+    $('pitInner').textContent = '-';
+    $('pitCenter').textContent = '-';
+    $('pitOuter').textContent = '-';
+    $('pitNotes').textContent = 'No notes saved for this tire.';
+  }
+
+  function fillCornerFromRow(corner, row) {
+    $(`${corner}_serial`).value = row.serial || '';
+    $(`${corner}_brand`).value = row.brand || '';
+    $(`${corner}_compound`).value = row.compound || '';
+    $(`${corner}_cold`).value = row.cold_psi || '';
+    $(`${corner}_hot`).value = row.hot_psi || '';
+    $(`${corner}_tread_i`).value = row.temp_inner || '';
+    $(`${corner}_tread_c`).value = row.temp_center || '';
+    $(`${corner}_tread_o`).value = row.temp_outer || '';
+  }
+
+  function tryParseQrPayload(decodedText) {
+    try {
+      const parsed = JSON.parse(decodedText);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          mode: 'json',
+          id: parsed.id || '',
+          data: parsed
+        };
+      }
+    } catch (err) {}
+
+    return {
+      mode: 'plain',
+      id: decodedText,
+      data: null
+    };
+  }
+
+  function applyScannedTire(decodedText) {
+    const parsed = tryParseQrPayload(decodedText);
+
+    if (scanMode === 'pit') {
+      loadPitCrewFromScan(parsed);
+      return;
     }
 
-    function openCSVPicker() {
-      $('csvLoader').click();
+    if (!activeCorner) return;
+
+    if (parsed.mode === 'json') {
+      const data = parsed.data;
+
+      $(`${activeCorner}_serial`).value = data.id || '';
+      $(`${activeCorner}_brand`).value = data.brand || '';
+      $(`${activeCorner}_compound`).value = data.compound || '';
+      $(`${activeCorner}_cold`).value = data.cold_psi ?? '';
+      $(`${activeCorner}_hot`).value = data.hot_psi ?? '';
+      $(`${activeCorner}_tread_i`).value = data.temp_inner ?? '';
+      $(`${activeCorner}_tread_c`).value = data.temp_center ?? '';
+      $(`${activeCorner}_tread_o`).value = data.temp_outer ?? '';
+
+      $('pitCrewEmpty').style.display = 'none';
+      $('pitCrewCard').style.display = 'block';
+      $('pitSerial').textContent = data.id || '-';
+      $('pitCorner').textContent = cornerNames[activeCorner] || '-';
+      $('pitSession').textContent = 'QR Data';
+      $('pitDate').textContent = '-';
+      $('pitCold').textContent = data.cold_psi ?? '-';
+      $('pitHot').textContent = data.hot_psi ?? '-';
+      $('pitInner').textContent = data.temp_inner ?? '-';
+      $('pitCenter').textContent = data.temp_center ?? '-';
+      $('pitOuter').textContent = data.temp_outer ?? '-';
+      $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
+
+      setStatus(`Loaded full QR data into ${cornerNames[activeCorner]}.`);
+      return;
     }
 
-    function loadCSV(event) {
-      const file = event.target.files?.[0];
-      if (file) loadCSVFile(file);
-      event.target.value = '';
-    }
+    const tireID = parsed.id;
+    $(`${activeCorner}_serial`).value = tireID;
 
-    function showPitCrewInfo(row) {
+    const match = [...entries].reverse().find(e => e.serial === tireID);
+
+    if (match) {
+      fillCornerFromRow(activeCorner, match);
+      showPitCrewInfo(match);
+      setStatus(`Loaded saved tire history for ${tireID}`);
+    } else {
+      clearPitCrewInfo();
+      setStatus(`New tire scanned: ${tireID}`);
+    }
+  }
+
+  function loadPitCrewFromScan(parsed) {
+    if (parsed.mode === 'json') {
+      const data = parsed.data;
+
       $('pitCrewEmpty').style.display = 'none';
       $('pitCrewCard').style.display = 'block';
 
-      $('pitSerial').textContent = row.serial || '-';
-      $('pitCorner').textContent = row.corner || '-';
-      $('pitSession').textContent = row.session || '-';
-      $('pitDate').textContent = row.date || '-';
+      $('pitSerial').textContent = data.id || '-';
+      $('pitCorner').textContent = '-';
+      $('pitSession').textContent = 'QR Data';
+      $('pitDate').textContent = '-';
+      $('pitCold').textContent = data.cold_psi ?? '-';
+      $('pitHot').textContent = data.hot_psi ?? '-';
+      $('pitInner').textContent = data.temp_inner ?? '-';
+      $('pitCenter').textContent = data.temp_center ?? '-';
+      $('pitOuter').textContent = data.temp_outer ?? '-';
+      $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
 
-      $('pitCold').textContent = row.cold_psi !== '' ? row.cold_psi : '-';
-      $('pitHot').textContent = row.hot_psi !== '' ? row.hot_psi : '-';
-
-      $('pitInner').textContent = row.temp_inner !== '' ? row.temp_inner : '-';
-      $('pitCenter').textContent = row.temp_center !== '' ? row.temp_center : '-';
-      $('pitOuter').textContent = row.temp_outer !== '' ? row.temp_outer : '-';
-
-      $('pitNotes').textContent = row.notes && String(row.notes).trim()
-        ? row.notes
-        : 'No notes saved for this tire.';
+      setStatus(`Loaded pit crew QR data for ${data.id || 'tire'}`);
+      return;
     }
 
-    function clearPitCrewInfo() {
-      $('pitCrewEmpty').style.display = 'block';
-      $('pitCrewCard').style.display = 'none';
-      $('pitSerial').textContent = '-';
+    const tireID = parsed.id;
+    const match = [...entries].reverse().find(e => e.serial === tireID);
+
+    if (match) {
+      showPitCrewInfo(match);
+      setStatus(`Loaded pit crew data for ${tireID}`);
+    } else {
+      $('pitCrewEmpty').style.display = 'none';
+      $('pitCrewCard').style.display = 'block';
+
+      $('pitSerial').textContent = tireID || '-';
       $('pitCorner').textContent = '-';
       $('pitSession').textContent = '-';
       $('pitDate').textContent = '-';
@@ -993,235 +1121,107 @@
       $('pitInner').textContent = '-';
       $('pitCenter').textContent = '-';
       $('pitOuter').textContent = '-';
-      $('pitNotes').textContent = 'No notes saved for this tire.';
+      $('pitNotes').textContent = 'No saved history found for this tire.';
+
+      setStatus(`Scanned ${tireID}, but no saved log history was found.`);
     }
+  }
 
-    function fillCornerFromRow(corner, row) {
-      $(`${corner}_serial`).value = row.serial || '';
-      $(`${corner}_brand`).value = row.brand || '';
-      $(`${corner}_compound`).value = row.compound || '';
-      $(`${corner}_cold`).value = row.cold_psi || '';
-      $(`${corner}_hot`).value = row.hot_psi || '';
-      $(`${corner}_tread_i`).value = row.temp_inner || '';
-      $(`${corner}_tread_c`).value = row.temp_center || '';
-      $(`${corner}_tread_o`).value = row.temp_outer || '';
-    }
+  async function startScanner(onMode) {
+    const scannerUI = $('qrScanner');
+    const qrReader = $('qrReader');
 
-    function applyScannedTire(decodedText) {
-      const parsed = tryParseQrPayload(decodedText);
+    if (scannerStarting) return;
+    scannerStarting = true;
 
-      if (scanMode === 'pit') {
-        loadPitCrewFromScan(parsed);
-        return;
+    try {
+      if (!window.isSecureContext) {
+        throw new Error('Camera requires HTTPS.');
       }
 
-      if (!activeCorner) return;
-
-      if (parsed.mode === 'json') {
-        const data = parsed.data;
-        $(`${activeCorner}_serial`).value = data.id || '';
-        $(`${activeCorner}_brand`).value = data.brand || '';
-        $(`${activeCorner}_compound`).value = data.compound || '';
-        $(`${activeCorner}_cold`).value = data.cold_psi ?? '';
-        $(`${activeCorner}_hot`).value = data.hot_psi ?? '';
-        $(`${activeCorner}_tread_i`).value = data.temp_inner ?? '';
-        $(`${activeCorner}_tread_c`).value = data.temp_center ?? '';
-        $(`${activeCorner}_tread_o`).value = data.temp_outer ?? '';
-
-        if (data.notes) {
-          $('pitCrewEmpty').style.display = 'none';
-          $('pitCrewCard').style.display = 'block';
-          $('pitSerial').textContent = data.id || '-';
-          $('pitCorner').textContent = '-';
-          $('pitSession').textContent = 'QR Data';
-          $('pitDate').textContent = '-';
-          $('pitCold').textContent = data.cold_psi ?? '-';
-          $('pitHot').textContent = data.hot_psi ?? '-';
-          $('pitInner').textContent = data.temp_inner ?? '-';
-          $('pitCenter').textContent = data.temp_center ?? '-';
-          $('pitOuter').textContent = data.temp_outer ?? '-';
-          $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
-        }
-
-        setStatus(`Loaded tire data from QR into ${cornerNames[activeCorner]}.`);
-        return;
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not available in this browser.');
       }
 
-      const tireID = parsed.id;
-      $(`${activeCorner}_serial`).value = tireID;
-
-      const match = [...entries].reverse().find(e => e.serial === tireID);
-
-      if (match) {
-        fillCornerFromRow(activeCorner, match);
-        showPitCrewInfo(match);
-        setStatus(`Loaded pit crew data for ${tireID}`);
-      } else {
-        clearPitCrewInfo();
-        setStatus(`New tire scanned: ${tireID}`);
-      }
-    }
-
-    function tryParseQrPayload(decodedText) {
-      try {
-        const parsed = JSON.parse(decodedText);
-        if (parsed && typeof parsed === 'object') {
-          return {
-            mode: 'json',
-            id: parsed.id || decodedText,
-            data: parsed
-          };
-        }
-      } catch {}
-      return {
-        mode: 'plain',
-        id: decodedText,
-        data: null
-      };
-    }
-
-    function loadPitCrewFromScan(parsed) {
-      const tireID = parsed.id;
-
-      if (parsed.mode === 'json') {
-        const data = parsed.data;
-        $('pitCrewEmpty').style.display = 'none';
-        $('pitCrewCard').style.display = 'block';
-
-        $('pitSerial').textContent = data.id || '-';
-        $('pitCorner').textContent = '-';
-        $('pitSession').textContent = 'QR Data';
-        $('pitDate').textContent = '-';
-        $('pitCold').textContent = data.cold_psi ?? '-';
-        $('pitHot').textContent = data.hot_psi ?? '-';
-        $('pitInner').textContent = data.temp_inner ?? '-';
-        $('pitCenter').textContent = data.temp_center ?? '-';
-        $('pitOuter').textContent = data.temp_outer ?? '-';
-        $('pitNotes').textContent = data.notes || 'No notes saved for this tire.';
-
-        setStatus(`Loaded pit crew QR data for ${tireID}`);
-        return;
+      if (qrScannerInstance) {
+        try { await qrScannerInstance.stop(); } catch {}
+        try { await qrScannerInstance.clear(); } catch {}
+        qrScannerInstance = null;
       }
 
-      const match = [...entries].reverse().find(e => e.serial === tireID);
+      qrReader.innerHTML = '';
+      scannerUI.style.display = 'flex';
 
-      if (match) {
-        showPitCrewInfo(match);
-        setStatus(`Loaded pit crew data for ${tireID}`);
-      } else {
-        $('pitCrewEmpty').style.display = 'none';
-        $('pitCrewCard').style.display = 'block';
-
-        $('pitSerial').textContent = tireID || '-';
-        $('pitCorner').textContent = '-';
-        $('pitSession').textContent = '-';
-        $('pitDate').textContent = '-';
-        $('pitCold').textContent = '-';
-        $('pitHot').textContent = '-';
-        $('pitInner').textContent = '-';
-        $('pitCenter').textContent = '-';
-        $('pitOuter').textContent = '-';
-        $('pitNotes').textContent = 'No saved history found for this tire.';
-
-        setStatus(`Scanned ${tireID}, but no saved log history was found.`);
-      }
-    }
-
-    async function startScanner(onMode) {
-      const scannerUI = $('qrScanner');
-      const qrReader = $('qrReader');
-
-      if (scannerStarting) return;
-      scannerStarting = true;
+      qrScannerInstance = new Html5Qrcode('qrReader');
 
       try {
-        if (!window.isSecureContext) {
-          throw new Error('Camera requires HTTPS.');
-        }
-
-        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-          throw new Error('Camera access is not available in this browser.');
-        }
-
-        if (qrScannerInstance) {
-          try { await qrScannerInstance.stop(); } catch {}
-          try { await qrScannerInstance.clear(); } catch {}
-          qrScannerInstance = null;
-        }
-
-        qrReader.innerHTML = '';
-        scannerUI.style.display = 'flex';
-
-        qrScannerInstance = new Html5Qrcode('qrReader');
-
-        try {
-          await qrScannerInstance.start(
-            { facingMode: { exact: 'environment' } },
-            { fps: 10, qrbox: 250 },
-            onScanSuccess
-          );
-        } catch (err) {
-          console.warn('Back camera exact failed, trying fallback.', err);
-          await qrScannerInstance.start(
-            { facingMode: 'environment' },
-            { fps: 10, qrbox: 250 },
-            onScanSuccess
-          );
-        }
-
-        setStatus(onMode === 'pit'
-          ? 'Pit crew scanner ready. Point camera at QR code.'
-          : 'Scanner ready. Point camera at QR code.'
+        await qrScannerInstance.start(
+          { facingMode: { exact: 'environment' } },
+          { fps: 10, qrbox: 250 },
+          onScanSuccess
         );
       } catch (err) {
-        console.error('Scanner start failed:', err);
-        scannerUI.style.display = 'none';
-        const msg = err?.message || String(err);
-        setStatus(`Scanner failed: ${msg}`, true);
-      } finally {
-        scannerStarting = false;
+        console.warn('Back camera exact failed, trying fallback.', err);
+        await qrScannerInstance.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: 250 },
+          onScanSuccess
+        );
       }
-    }
 
-    function scanTire(corner) {
-      activeCorner = corner;
-      scanMode = 'corner';
-      startScanner('corner');
+      setStatus(onMode === 'pit'
+        ? 'Pit crew scanner ready. Point camera at QR code.'
+        : 'Scanner ready. Point camera at QR code.'
+      );
+    } catch (err) {
+      console.error('Scanner start failed:', err);
+      scannerUI.style.display = 'none';
+      const msg = err?.message || String(err);
+      setStatus(`Scanner failed: ${msg}`, true);
+    } finally {
+      scannerStarting = false;
     }
+  }
 
-    function scanPitCrewTire() {
-      activeCorner = null;
-      scanMode = 'pit';
-      startScanner('pit');
-    }
+  function scanTire(corner) {
+    activeCorner = corner;
+    scanMode = 'corner';
+    startScanner('corner');
+  }
 
-    function onScanSuccess(decodedText) {
-      stopScanner();
-      applyScannedTire(decodedText);
-    }
+  function scanPitCrewTire() {
+    activeCorner = null;
+    scanMode = 'pit';
+    startScanner('pit');
+  }
 
-    async function stopScanner() {
-      try {
-        if (qrScannerInstance) {
-          try { await qrScannerInstance.stop(); } catch {}
-          try { await qrScannerInstance.clear(); } catch {}
-        }
-      } finally {
-        qrScannerInstance = null;
-        $('qrScanner').style.display = 'none';
+  function onScanSuccess(decodedText) {
+    stopScanner();
+    applyScannedTire(decodedText);
+  }
+
+  async function stopScanner() {
+    try {
+      if (qrScannerInstance) {
+        try { await qrScannerInstance.stop(); } catch {}
+        try { await qrScannerInstance.clear(); } catch {}
       }
+    } finally {
+      qrScannerInstance = null;
+      $('qrScanner').style.display = 'none';
     }
+  }
 
-    $('addBtn').addEventListener('click', addSession);
-    $('clearBtn').addEventListener('click', clearForm);
-    $('saveCsvBtn').addEventListener('click', downloadCSV);
-    $('printBtn').addEventListener('click', () => window.print());
-    $('csvLoader').addEventListener('change', loadCSV);
+  $('addBtn').addEventListener('click', addSession);
+  $('clearBtn').addEventListener('click', clearForm);
+  $('saveCsvBtn').addEventListener('click', downloadCSV);
+  $('printBtn').addEventListener('click', () => window.print());
+  $('csvLoader').addEventListener('change', loadCSV);
 
-    setToday();
-    loadStored();
-    render();
-    clearPitCrewInfo();
-  </script>
+  setToday();
+  loadStored();
+  render();
+  clearPitCrewInfo();
+</script>
 </body>
 </html>
