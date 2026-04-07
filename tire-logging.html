@@ -31,18 +31,25 @@
     }
 
     header{
-      position:sticky;
-      top:0;
-      z-index:10;
-      background:linear-gradient(180deg, rgba(20,20,34,.96), rgba(11,11,16,.88));
+      position:sticky; top:0; z-index:10;
+      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
       border-bottom:1px solid var(--line);
       padding:14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      backdrop-filter: blur(10px);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
     }
+    .brand{display:flex; align-items:center; gap:12px;}
+    .logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+
+  background-image: url("logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
 
     .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
