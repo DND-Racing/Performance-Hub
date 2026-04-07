@@ -1209,114 +1209,96 @@ function clearForm() {
     reader.readAsText(file);
   }
 
-  // ===== QR SCANNER =====
-  let qrScannerInstance = null;
-  let activeCorner = null;
-  let scannerStarting = false;
+ // ===== QR SCANNER =====
+let qrScannerInstance = null;
+let activeCorner = null;
+let scannerStarting = false;
 
-  async function scanTire(corner) {
-    activeCorner = corner;
+async function scanTire(corner) {
+  activeCorner = corner;
 
-    const scannerUI = document.getElementById('qrScanner');
-    const qrReader = document.getElementById('qrReader');
+  const scannerUI = document.getElementById('qrScanner');
+  const qrReader = document.getElementById('qrReader');
 
-    if (scannerStarting) return;
-    scannerStarting = true;
+  if (scannerStarting) return;
+  scannerStarting = true;
 
-    try {
-      if (!window.isSecureContext) {
-        throw new Error('Camera requires HTTPS.');
-      }
-
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        throw new Error('Camera access is not available in this browser.');
-      }
-
-      if (qrScannerInstance) {
-        try {
-          await qrScannerInstance.stop();
-        } catch {}
-        try {
-          await qrScannerInstance.clear();
-        } catch {}
-        qrScannerInstance = null;
-      }
-
-      qrReader.innerHTML = '';
-      scannerUI.style.display = 'flex';
-
-      qrScannerInstance = new Html5Qrcode('qrReader');
-
-      setStatus('Starting camera...');
-
-      await qrScannerInstance.start(
-  { facingMode: { exact: "environment" } },
-  { fps: 10, qrbox: 250 },
-  (decodedText) => {
-    stopScanner();
-    applyScannedTire(decodedText);
-  }
-).catch(err => {
-  console.warn("Back camera failed, trying default camera...");
-
-  // fallback for Safari
-  qrScannerInstance.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    (decodedText) => {
-      stopScanner();
-      applyScannedTire(decodedText);
+  try {
+    if (!window.isSecureContext) {
+      throw new Error('Camera requires HTTPS.');
     }
-  );
-});
 
-      setStatus('Scanner ready. Point camera at QR code.');
-    } catch (err) {
-      console.error('Scanner start failed:', err);
-      scannerUI.style.display = 'none';
-
-      const msg =
-        err?.message ||
-        (typeof err === 'string' ? err : 'Camera could not be started.');
-
-      setStatus(`Scanner failed: ${msg}`, true);
-    } finally {
-      scannerStarting = false;
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera access is not available in this browser.');
     }
-  }
 
-  async function stopScanner() {
-    const scannerUI = document.getElementById('qrScanner');
-
-    try {
-      if (qrScannerInstance) {
-        try {
-          await qrScannerInstance.stop();
-        } catch {}
-        try {
-          await qrScannerInstance.clear();
-        } catch {}
-      }
-    } finally {
+    if (qrScannerInstance) {
+      try { await qrScannerInstance.stop(); } catch {}
+      try { await qrScannerInstance.clear(); } catch {}
       qrScannerInstance = null;
-      scannerUI.style.display = 'none';
     }
-  }
 
- function applyScannedTire(tireID) {
+    qrReader.innerHTML = '';
+    scannerUI.style.display = 'flex';
+
+    qrScannerInstance = new Html5Qrcode('qrReader');
+    setStatus('Starting camera.');
+
+    try {
+      await qrScannerInstance.start(
+        { facingMode: { exact: 'environment' } },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      );
+    } catch (err) {
+      console.warn('Back camera failed, trying fallback camera.', err);
+      await qrScannerInstance.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: 250 },
+        onScanSuccess
+      );
+    }
+
+    setStatus('Scanner ready. Point camera at QR code.');
+  } catch (err) {
+    console.error('Scanner start failed:', err);
+    scannerUI.style.display = 'none';
+    const msg = err?.message || (typeof err === 'string' ? err : 'Camera could not be started.');
+    setStatus(`Scanner failed: ${msg}`, true);
+  } finally {
+    scannerStarting = false;
+  }
+}
+
+function onScanSuccess(decodedText) {
+  stopScanner();
+  applyScannedTire(decodedText);
+}
+
+async function stopScanner() {
+  const scannerUI = document.getElementById('qrScanner');
+
+  try {
+    if (qrScannerInstance) {
+      try { await qrScannerInstance.stop(); } catch {}
+      try { await qrScannerInstance.clear(); } catch {}
+    }
+  } finally {
+    qrScannerInstance = null;
+    scannerUI.style.display = 'none';
+  }
+}
+
+function applyScannedTire(tireID) {
   if (!activeCorner) return;
 
-  // fill scanned serial into the selected corner
   $(`${activeCorner}_serial`).value = tireID;
 
-  // find most recent matching entry
   const match = [...entries].reverse().find(e => e.serial === tireID);
 
   if (match) {
     $(`${activeCorner}_brand`).value = match.brand || '';
     $(`${activeCorner}_compound`).value = match.compound || '';
-
-    // optional: also fill the form with the last pressures/temps
     $(`${activeCorner}_cold`).value = match.cold_psi || '';
     $(`${activeCorner}_hot`).value = match.hot_psi || '';
     $(`${activeCorner}_tread_i`).value = match.temp_inner || '';
@@ -1330,36 +1312,6 @@ function clearForm() {
     setStatus(`New tire scanned: ${tireID}`);
   }
 }
-
-  setToday();
-  loadStored();
-  render();
-	function showPitCrewInfo(row) {
-  $('pitCrewEmpty').style.display = 'none';
-  $('pitCrewCard').style.display = 'block';
-
-  $('pitSerial').textContent = row.serial || '-';
-  $('pitCorner').textContent = row.corner || '-';
-  $('pitSession').textContent = row.session || '-';
-  $('pitDate').textContent = row.date || '-';
-
-  $('pitCold').textContent = row.cold_psi !== '' ? row.cold_psi : '-';
-  $('pitHot').textContent = row.hot_psi !== '' ? row.hot_psi : '-';
-
-  $('pitInner').textContent = row.temp_inner !== '' ? row.temp_inner : '-';
-  $('pitCenter').textContent = row.temp_center !== '' ? row.temp_center : '-';
-  $('pitOuter').textContent = row.temp_outer !== '' ? row.temp_outer : '-';
-
-  $('pitNotes').textContent = row.notes && row.notes.trim()
-    ? row.notes
-    : 'No notes saved for this tire.';
-}
-
-function clearPitCrewInfo() {
-  $('pitCrewEmpty').style.display = 'block';
-  $('pitCrewCard').style.display = 'none';
-}
-	clearPitCrewInfo();
 </script>
 	<div id="qrScanner" style="
   display:none;
@@ -1373,5 +1325,6 @@ function clearPitCrewInfo() {
 ">
   <div id="qrReader" style="width:300px;"></div>
   <button class="btn2" style="margin-top:15px;" onclick="stopScanner()">Cancel</button>
+</div>
 </body>
 </html>
