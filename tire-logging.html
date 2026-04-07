@@ -54,17 +54,22 @@
     .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
     .logo{
-      width:46px;
-      height:46px;
-      border-radius:12px;
-      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.6));
-      display:grid;
-      place-items:center;
-      color:#190113;
-      font-weight:900;
-      letter-spacing:.5px;
-      box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
-    }
+  width:46px;
+  height:46px;
+  border-radius:12px;
+  background:
+    linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.6)),
+    url("logo.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display:grid;
+  place-items:center;
+  color:#190113;
+  font-weight:900;
+  letter-spacing:.5px;
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
 
     h1{font-size:18px;margin:0;letter-spacing:.5px;}
     .sub{color:var(--muted);font-size:12px;margin-top:2px;}
@@ -281,7 +286,7 @@
 <body>
   <header>
     <div class="brand">
-      <div class="logo"></div>
+      <div class="logo">DND</div>
       <div>
         <h1>Tire Logging</h1>
         <div class="sub">QR scan + pit crew lookup + CSV save/load</div>
