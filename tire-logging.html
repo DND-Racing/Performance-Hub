@@ -847,349 +847,409 @@ notesBox2 {
     </section>
   </div>
 
-  <script>
-    const $ = (id) => document.getElementById(id);
-    const storageKey = 'dnd_tire_logger_entries';
+<script>
+  const $ = (id) => document.getElementById(id);
+  const storageKey = 'dnd_tire_logger_entries';
 
-    const corners = ['lf','rf','lr','rr'];
-    const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
+  const corners = ['lf','rf','lr','rr'];
+  const cornerNames = { lf:'LF', rf:'RF', lr:'LR', rr:'RR' };
 
-    let entries = [];
+  let entries = [];
 
-    function setToday() {
-      const today = new Date();
-      const y = today.getFullYear();
-      const m = String(today.getMonth() + 1).padStart(2, '0');
-      const d = String(today.getDate()).padStart(2, '0');
-      $('date').value = `${y}-${m}-${d}`;
-    }
+  function setToday() {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    $('date').value = `${y}-${m}-${d}`;
+  }
 
-    function num(v) {
-      const n = parseFloat(v);
-      return Number.isFinite(n) ? n : '';
-    }
+  function num(v) {
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : '';
+  }
 
-    function fmt(v, digits = 1) {
-      return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
-    }
+  function fmt(v, digits = 1) {
+    return Number.isFinite(v) ? v.toFixed(digits) : '0.0';
+  }
 
-    function readSessionHeader() {
-      return {
-        date: $('date').value,
-        track: $('track').value.trim(),
-        event: $('event').value.trim(),
-        session: $('session').value,
-        car: $('car').value.trim(),
-        driver: $('driver').value.trim(),
-        track_temp: num($('airTrack').value),
-        air_temp: num($('airAmbient').value),
-        notes: $('sessionNotes').value.trim()
-      };
-    }
+  function readSessionHeader() {
+    return {
+      date: $('date').value,
+      track: $('track').value.trim(),
+      event: $('event').value.trim(),
+      session: $('session').value,
+      car: $('car').value.trim(),
+      driver: $('driver').value.trim(),
+      track_temp: num($('airTrack').value),
+      air_temp: num($('airAmbient').value),
+      notes: $('sessionNotes').value.trim()
+    };
+  }
 
-    function readCorner(corner) {
-      return {
-        corner: cornerNames[corner],
-        brand: $(`${corner}_brand`).value.trim(),
-        compound: $(`${corner}_compound`).value.trim(),
-        serial: $(`${corner}_serial`).value.trim(),
-        cold_psi: num($(`${corner}_cold`).value),
-        hot_psi: num($(`${corner}_hot`).value),
-        circumference: num($(`${corner}_circ`).value),
-        stagger: num($(`${corner}_stagger`).value),
-        temp_inner: num($(`${corner}_tread_i`).value),
-        temp_center: num($(`${corner}_tread_c`).value),
-        temp_outer: num($(`${corner}_tread_o`).value)
-      };
-    }
+  function readCorner(corner) {
+    return {
+      corner: cornerNames[corner],
+      brand: $(`${corner}_brand`).value.trim(),
+      compound: $(`${corner}_compound`).value.trim(),
+      serial: $(`${corner}_serial`).value.trim(),
+      cold_psi: num($(`${corner}_cold`).value),
+      hot_psi: num($(`${corner}_hot`).value),
+      circumference: num($(`${corner}_circ`).value),
+      stagger: num($(`${corner}_stagger`).value),
+      temp_inner: num($(`${corner}_tread_i`).value),
+      temp_center: num($(`${corner}_tread_c`).value),
+      temp_outer: num($(`${corner}_tread_o`).value)
+    };
+  }
 
-    function hasCornerData(cornerData) {
-      return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
-    }
+  function hasCornerData(cornerData) {
+    return Object.entries(cornerData).some(([key, value]) => key !== 'corner' && value !== '');
+  }
 
-    function addSession() {
-      const header = readSessionHeader();
-      const newRows = [];
+  function addSession() {
+    const header = readSessionHeader();
+    const newRows = [];
 
-      for (const c of corners) {
-        const cornerData = readCorner(c);
-        if (hasCornerData(cornerData)) {
-          newRows.push({ ...header, ...cornerData });
-        }
-      }
-
-      if (!newRows.length) {
-        setStatus('Enter data in at least one tire corner before adding.', true);
-        return;
-      }
-
-      entries = [...entries, ...newRows];
-      persist();
-      render();
-      setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
-    }
-
-    function setStatus(message, isWarn = false) {
-      const el = $('status');
-      el.textContent = message;
-      el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
-    }
-
-    function persist() {
-      localStorage.setItem(storageKey, JSON.stringify(entries));
-    }
-
-    function loadStored() {
-      try {
-        const raw = localStorage.getItem(storageKey);
-        entries = raw ? JSON.parse(raw) : [];
-      } catch {
-        entries = [];
+    for (const c of corners) {
+      const cornerData = readCorner(c);
+      if (hasCornerData(cornerData)) {
+        newRows.push({ ...header, ...cornerData });
       }
     }
 
-    function updateStats() {
-      $('statCount').textContent = String(entries.length);
-
-      const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
-      const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
-      const growthVals = entries
-        .map(r => {
-          const hot = Number(r.hot_psi);
-          const cold = Number(r.cold_psi);
-          return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
-        })
-        .filter(Number.isFinite);
-
-      const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
-      $('statCold').textContent = fmt(avg(coldVals), 1);
-      $('statHot').textContent = fmt(avg(hotVals), 1);
-      $('statGrowth').textContent = fmt(avg(growthVals), 3);
+    if (!newRows.length) {
+      setStatus('Enter data in at least one tire corner before adding.', true);
+      return;
     }
 
-    function render() {
-      const tbody = $('logBody');
-      tbody.innerHTML = '';
-
-      if (!entries.length) {
-        $('logEmpty').style.display = 'block';
-        $('tableWrap').style.display = 'none';
-        updateStats();
-        return;
-      }
-
-      $('logEmpty').style.display = 'none';
-      $('tableWrap').style.display = 'block';
-
-      for (const row of entries) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${escapeHtml(row.date || '')}</td>
-          <td>${escapeHtml(row.track || '')}</td>
-          <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
-          <td>${escapeHtml(row.corner || '')}</td>
-          <td>${escapeHtml(row.brand || '')}</td>
-          <td>${escapeHtml(row.compound || '')}</td>
-          <td>${safeVal(row.cold_psi)}</td>
-          <td>${safeVal(row.hot_psi)}</td>
-          <td>${safeVal(row.circumference)}</td>
-          <td>${safeVal(row.stagger)}</td>
-          <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
-          <td>${escapeHtml(row.serial || '')}</td>
-        `;
-        tbody.appendChild(tr);
-      }
-
-      updateStats();
-    }
-
-    function safeVal(value) {
-      return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
-    }
-
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    function clearForm() {
-      document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
-        if (el.id !== 'date') el.value = '';
-      });
-      $('session').selectedIndex = 0;
-      setToday();
-      setStatus('Form cleared.');
-    }
-
-    function toCSV(rows) {
-      const headers = [
-        'date','track','event','session','car','driver','track_temp','air_temp','notes',
-        'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
-        'temp_inner','temp_center','temp_outer'
-      ];
-
-      const esc = (v) => {
-        const s = v === null || v === undefined ? '' : String(v);
-        return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
-      };
-
-      const lines = [headers.join(',')];
-      for (const row of rows) {
-        lines.push(headers.map(h => esc(row[h])).join(','));
-      }
-      return lines.join('\n');
-    }
-
-    function downloadCSV() {
-      if (!entries.length) {
-        setStatus('There is no data to export yet.', true);
-        return;
-      }
-      const csv = toCSV(entries);
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      const stamp = $('date').value || 'tire-log';
-      a.href = url;
-      a.download = `dnd-tire-log-${stamp}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-      setStatus('CSV saved.');
-    }
-
-    function parseCSVLine(line) {
-      const result = [];
-      let current = '';
-      let inQuotes = false;
-
-      for (let i = 0; i < line.length; i++) {
-        const ch = line[i];
-        const next = line[i + 1];
-        if (ch === '"') {
-          if (inQuotes && next === '"') {
-            current += '"';
-            i++;
-          } else {
-            inQuotes = !inQuotes;
-          }
-        } else if (ch === ',' && !inQuotes) {
-          result.push(current);
-          current = '';
-        } else {
-          current += ch;
-        }
-      }
-      result.push(current);
-      return result;
-    }
-
-    function loadCSVFile(file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const text = String(reader.result || '').trim();
-          if (!text) {
-            setStatus('The selected CSV file is empty.', true);
-            return;
-          }
-
-          const lines = text.split(/\r?\n/);
-          const headers = parseCSVLine(lines[0]);
-          const rows = [];
-
-          for (let i = 1; i < lines.length; i++) {
-            if (!lines[i].trim()) continue;
-            const values = parseCSVLine(lines[i]);
-            const row = {};
-            headers.forEach((h, idx) => row[h] = values[idx] ?? '');
-            rows.push(row);
-          }
-
-          entries = rows;
-          persist();
-          render();
-          setStatus(`Loaded ${rows.length} rows from CSV.`);
-        } catch {
-          setStatus('Could not read that CSV file.', true);
-        }
-      };
-      reader.readAsText(file);
-    }
-
-    $('addBtn').addEventListener('click', addSession);
-    $('clearBtn').addEventListener('click', clearForm);
-    $('saveCsvBtn').addEventListener('click', downloadCSV);
-    $('printBtn').addEventListener('click', () => window.print());
-    $('csvLoader').addEventListener('change', (e) => {
-      const file = e.target.files?.[0];
-      if (file) loadCSVFile(file);
-      e.target.value = '';
-    });
-
-    setToday();
-    loadStored();
+    entries = [...entries, ...newRows];
+    persist();
     render();
+    setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
+  }
 
-	  // ===== QR SCANNER =====
-let qrScannerInstance = null;
-let activeCorner = null;
+  function setStatus(message, isWarn = false) {
+    const el = $('status');
+    el.textContent = message;
+    el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
+  }
 
-function scanTire(corner) {
-  activeCorner = corner;
+  function persist() {
+    localStorage.setItem(storageKey, JSON.stringify(entries));
+  }
 
-  const scannerUI = document.getElementById("qrScanner");
-  scannerUI.style.display = "flex";
-
-  qrScannerInstance = new Html5Qrcode("qrReader");
-
-  qrScannerInstance.start(
-    { facingMode: "environment" },
-    { fps: 10, qrbox: 250 },
-    (decodedText) => {
-      stopScanner();
-      applyScannedTire(decodedText);
+  function loadStored() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      entries = raw ? JSON.parse(raw) : [];
+    } catch {
+      entries = [];
     }
-  ).catch(err => {
-    alert("Camera failed. Must run on HTTPS (GitHub Pages recommended).");
-    console.error(err);
+  }
+
+  function updateStats() {
+    $('statCount').textContent = String(entries.length);
+
+    const coldVals = entries.map(r => Number(r.cold_psi)).filter(Number.isFinite);
+    const hotVals = entries.map(r => Number(r.hot_psi)).filter(Number.isFinite);
+    const growthVals = entries
+      .map(r => {
+        const hot = Number(r.hot_psi);
+        const cold = Number(r.cold_psi);
+        return Number.isFinite(hot) && Number.isFinite(cold) ? hot - cold : NaN;
+      })
+      .filter(Number.isFinite);
+
+    const avg = (arr) => arr.length ? arr.reduce((a,b)=>a+b,0)/arr.length : 0;
+    $('statCold').textContent = fmt(avg(coldVals), 1);
+    $('statHot').textContent = fmt(avg(hotVals), 1);
+    $('statGrowth').textContent = fmt(avg(growthVals), 3);
+  }
+
+  function render() {
+    const tbody = $('logBody');
+    tbody.innerHTML = '';
+
+    if (!entries.length) {
+      $('logEmpty').style.display = 'block';
+      $('tableWrap').style.display = 'none';
+      updateStats();
+      return;
+    }
+
+    $('logEmpty').style.display = 'none';
+    $('tableWrap').style.display = 'block';
+
+    for (const row of entries) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(row.date || '')}</td>
+        <td>${escapeHtml(row.track || '')}</td>
+        <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
+        <td>${escapeHtml(row.corner || '')}</td>
+        <td>${escapeHtml(row.brand || '')}</td>
+        <td>${escapeHtml(row.compound || '')}</td>
+        <td>${safeVal(row.cold_psi)}</td>
+        <td>${safeVal(row.hot_psi)}</td>
+        <td>${safeVal(row.circumference)}</td>
+        <td>${safeVal(row.stagger)}</td>
+        <td>${safeVal(row.temp_inner)} / ${safeVal(row.temp_center)} / ${safeVal(row.temp_outer)}</td>
+        <td>${escapeHtml(row.serial || '')}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+
+    updateStats();
+  }
+
+  function safeVal(value) {
+    return value === '' || value === null || value === undefined ? '' : escapeHtml(String(value));
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function clearForm() {
+    document.querySelectorAll('input:not([type=file]), textarea').forEach(el => {
+      if (el.id !== 'date') el.value = '';
+    });
+    $('session').selectedIndex = 0;
+    setToday();
+    setStatus('Form cleared.');
+  }
+
+  function toCSV(rows) {
+    const headers = [
+      'date','track','event','session','car','driver','track_temp','air_temp','notes',
+      'corner','brand','compound','serial','cold_psi','hot_psi','circumference','stagger',
+      'temp_inner','temp_center','temp_outer'
+    ];
+
+    const esc = (v) => {
+      const s = v === null || v === undefined ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+
+    const lines = [headers.join(',')];
+    for (const row of rows) {
+      lines.push(headers.map(h => esc(row[h])).join(','));
+    }
+    return lines.join('\n');
+  }
+
+  function downloadCSV() {
+    if (!entries.length) {
+      setStatus('There is no data to export yet.', true);
+      return;
+    }
+
+    const csv = toCSV(entries);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = $('date').value || 'tire-log';
+
+    a.href = url;
+    a.download = `dnd-tire-log-${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setStatus('CSV saved.');
+  }
+
+  function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      const next = line[i + 1];
+
+      if (ch === '"') {
+        if (inQuotes && next === '"') {
+          current += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+
+    result.push(current);
+    return result;
+  }
+
+  function loadCSVFile(file) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        const text = String(reader.result || '').trim();
+        if (!text) {
+          setStatus('The selected CSV file is empty.', true);
+          return;
+        }
+
+        const lines = text.split(/\r?\n/);
+        const headers = parseCSVLine(lines[0]);
+        const rows = [];
+
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          const values = parseCSVLine(lines[i]);
+          const row = {};
+          headers.forEach((h, idx) => row[h] = values[idx] ?? '');
+          rows.push(row);
+        }
+
+        entries = rows;
+        persist();
+        render();
+        setStatus(`Loaded ${rows.length} rows from CSV.`);
+      } catch (err) {
+        console.error(err);
+        setStatus('Could not read that CSV file.', true);
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  // ===== QR SCANNER =====
+  let qrScannerInstance = null;
+  let activeCorner = null;
+  let scannerStarting = false;
+
+  async function scanTire(corner) {
+    activeCorner = corner;
+
+    const scannerUI = document.getElementById('qrScanner');
+    const qrReader = document.getElementById('qrReader');
+
+    if (scannerStarting) return;
+    scannerStarting = true;
+
+    try {
+      if (!window.isSecureContext) {
+        throw new Error('Camera requires HTTPS.');
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not available in this browser.');
+      }
+
+      if (qrScannerInstance) {
+        try {
+          await qrScannerInstance.stop();
+        } catch {}
+        try {
+          await qrScannerInstance.clear();
+        } catch {}
+        qrScannerInstance = null;
+      }
+
+      qrReader.innerHTML = '';
+      scannerUI.style.display = 'flex';
+
+      qrScannerInstance = new Html5Qrcode('qrReader');
+
+      setStatus('Starting camera...');
+
+      await qrScannerInstance.start(
+        { facingMode: { ideal: 'environment' } },
+        {
+          fps: 10,
+          qrbox: { width: 220, height: 220 },
+          aspectRatio: 1
+        },
+        (decodedText) => {
+          applyScannedTire(decodedText);
+          stopScanner();
+        },
+        () => {
+          // ignore live frame decode misses
+        }
+      );
+
+      setStatus('Scanner ready. Point camera at QR code.');
+    } catch (err) {
+      console.error('Scanner start failed:', err);
+      scannerUI.style.display = 'none';
+
+      const msg =
+        err?.message ||
+        (typeof err === 'string' ? err : 'Camera could not be started.');
+
+      setStatus(`Scanner failed: ${msg}`, true);
+    } finally {
+      scannerStarting = false;
+    }
+  }
+
+  async function stopScanner() {
+    const scannerUI = document.getElementById('qrScanner');
+
+    try {
+      if (qrScannerInstance) {
+        try {
+          await qrScannerInstance.stop();
+        } catch {}
+        try {
+          await qrScannerInstance.clear();
+        } catch {}
+      }
+    } finally {
+      qrScannerInstance = null;
+      scannerUI.style.display = 'none';
+    }
+  }
+
+  function applyScannedTire(tireID) {
+    if (!activeCorner) return;
+
+    const cleanID = String(tireID || '').trim();
+    document.getElementById(`${activeCorner}_serial`).value = cleanID;
+
+    const match = [...entries].reverse().find(e => String(e.serial || '').trim() === cleanID);
+
+    if (match) {
+      document.getElementById(`${activeCorner}_brand`).value = match.brand || '';
+      document.getElementById(`${activeCorner}_compound`).value = match.compound || '';
+      setStatus(`Loaded previous data for ${cleanID}`);
+    } else {
+      setStatus(`New tire scanned: ${cleanID}`);
+    }
+  }
+
+  $('addBtn').addEventListener('click', addSession);
+  $('clearBtn').addEventListener('click', clearForm);
+  $('saveCsvBtn').addEventListener('click', downloadCSV);
+  $('printBtn').addEventListener('click', () => window.print());
+  $('csvLoader').addEventListener('change', (e) => {
+    const file = e.target.files?.[0];
+    if (file) loadCSVFile(file);
+    e.target.value = '';
   });
-}
 
-function stopScanner() {
-  if (qrScannerInstance) {
-    qrScannerInstance.stop().then(() => {
-      qrScannerInstance.clear();
-    }).catch(()=>{});
-  }
-  document.getElementById("qrScanner").style.display = "none";
-}
-
-// ===== APPLY SCANNED TIRE =====
-function applyScannedTire(tireID) {
-  if (!activeCorner) return;
-
-  // Fill serial field
-  document.getElementById(`${activeCorner}_serial`).value = tireID;
-
-  // Find most recent match (reverse search)
-  const match = [...entries].reverse().find(e => e.serial === tireID);
-
-  if (match) {
-    document.getElementById(`${activeCorner}_brand`).value = match.brand || '';
-    document.getElementById(`${activeCorner}_compound`).value = match.compound || '';
-
-    setStatus(`Loaded previous data for ${tireID}`);
-  } else {
-    setStatus(`New tire scanned: ${tireID}`);
-  }
-}
-  </script>
+  setToday();
+  loadStored();
+  render();
+</script>
 	<div id="qrScanner" style="
   display:none;
   position:fixed;
