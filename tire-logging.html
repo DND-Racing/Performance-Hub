@@ -985,26 +985,26 @@ notesBox2 {
   }
 
   function addSession() {
-    const header = readSessionHeader();
-    const newRows = [];
+  const header = readSessionHeader();
+  const newRows = [];
 
-    for (const c of corners) {
-      const cornerData = readCorner(c);
-      if (hasCornerData(cornerData)) {
-        newRows.push({ ...header, ...cornerData });
-      }
+  for (const c of corners) {
+    const cornerData = readCorner(c);
+    if (hasCornerData(cornerData)) {
+      newRows.push({ ...header, ...cornerData });
     }
-
-    if (!newRows.length) {
-      setStatus('Enter data in at least one tire corner before adding.', true);
-      return;
-    }
-
-    entries = [...entries, ...newRows];
-    persist();
-    render();
-    setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
   }
+
+  if (!newRows.length) {
+    setStatus('Enter data in at least one tire corner before adding.', true);
+    return;
+  }
+
+  entries = [...entries, ...newRows];
+  persist();
+  render();
+  setStatus(`Added ${newRows.length} tire entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
+}
 
   function setStatus(message, isWarn = false) {
     const el = $('status');
@@ -1102,7 +1102,6 @@ function clearForm() {
   clearPitCrewInfo();
   setStatus('Form cleared.');
 }
-  }
 
   function toCSV(rows) {
     const headers = [
