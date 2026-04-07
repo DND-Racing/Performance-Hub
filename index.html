@@ -58,7 +58,7 @@
       justify-content:center;
     }
 
-    .orbit-ring,
+   orbit-ring,
     .orbit-ring2{
       position:absolute;
       border-radius:50%;
@@ -101,38 +101,52 @@
 
     /* car orbit system */
     .car-orbit{
-  position:absolute;
-  width:900px;
-  height:900px;
-  animation:driveOrbit 14s linear infinite;
-  pointer-events:none;
-  z-index:3;
-}
+      position:absolute;
+      width:900px;
+      height:900px;
+      animation:driveOrbit 14s linear infinite;
+      pointer-events:none;
+      z-index:3;
+    }
 
-.car-anchor{
-  position:absolute;
-  top:50%;
-  left:50%;
-  width:0;
-  height:0;
-  transform:translate(-50%,-50%);
-}
+    .car-anchor{
+      position:absolute;
+      top:50%;
+      left:50%;
+      width:0;
+      height:0;
+      transform:translate(-50%,-50%);
+    }
 
-.car{
-  position:absolute;
-  left:0;
-  top:-450px;
-  width:165px;
-  transform:translate(-50%, -50%) rotate(90deg);
-  transform-origin:center center;
-  filter:
-    drop-shadow(0 14px 20px rgba(0,0,0,.45))
-    drop-shadow(0 0 12px rgba(255,46,166,.18));
-  backface-visibility:hidden;
-  -webkit-backface-visibility:hidden;
-}
+    .car{
+      position:absolute;
+      left:0;
+      top:0;
+      width:165px;
+      transform:
+        translate(-50%, -50%)
+        translateY(-500px)
+        rotate(230deg);
+      transform-origin:center center;
+      filter:
+        drop-shadow(0 14px 20px rgba(0,0,0,.45))
+        drop-shadow(0 0 12px rgba(255,46,166,.18));
+    }
 .car::before{
   animation:dustPulse .8s ease-in-out infinite alternate;
+}
+
+@keyframes dustPulse{
+  from{
+    opacity:.65;
+    filter:blur(10px);
+    transform:translate(-10%, -50%) scaleX(.92);
+  }
+  to{
+    opacity:1;
+    filter:blur(16px);
+    transform:translate(-14%, -50%) scaleX(1.08);
+  }
 }
 
 @keyframes dustPulse{
