@@ -1171,20 +1171,25 @@ notesBox2 {
       setStatus('Starting camera...');
 
       await qrScannerInstance.start(
-        { facingMode: { ideal: 'environment' } },
-        {
-          fps: 10,
-          qrbox: { width: 220, height: 220 },
-          aspectRatio: 1
-        },
-        (decodedText) => {
-          applyScannedTire(decodedText);
-          stopScanner();
-        },
-        () => {
-          // ignore live frame decode misses
-        }
-      );
+  { facingMode: { exact: "environment" } },
+  { fps: 10, qrbox: 250 },
+  (decodedText) => {
+    stopScanner();
+    applyScannedTire(decodedText);
+  }
+).catch(err => {
+  console.warn("Back camera failed, trying default camera...");
+
+  // fallback for Safari
+  qrScannerInstance.start(
+    { facingMode: "environment" },
+    { fps: 10, qrbox: 250 },
+    (decodedText) => {
+      stopScanner();
+      applyScannedTire(decodedText);
+    }
+  );
+});
 
       setStatus('Scanner ready. Point camera at QR code.');
     } catch (err) {
