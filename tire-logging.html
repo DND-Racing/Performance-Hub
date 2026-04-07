@@ -575,16 +575,16 @@ notesBox2 {
 	<script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
+<header>
   <div class="brand">
     <div class="logo"></div>
     <div>
       <h1>Tire Logging</h1>
     </div>
   </div>
-  <div class="btnbar">
+ <div class="btnbar">
   <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
   <button class="btn2" onclick="openCSVPicker()">Load Notes</button>
-
   <button class="btn3" onclick="window.location.href='index.html'">Return Home</button>
 </div>
 </header>
@@ -894,12 +894,11 @@ notesBox2 {
         <span class="pill">Browser Memory + CSV</span>
       </div>
 
-      <div class="btnbar" style="justify-content:flex-start;margin-bottom:12px;">
-        <button class="btn3" type="button" id="saveCsvBtn">Save CSV</button>
-        <button class="btn2" type="button" id="printBtn">Print View</button>
-        <label class="btn2" for="csvLoader" style="display:inline-flex;align-items:center;justify-content:center;padding:14px 16px;cursor:pointer;">Load CSV</label>
-        <input id="csvLoader" type="file" accept=".csv" hidden />
-      </div>
+      <div class="btnbar" style="margin-bottom:10px;">
+  <button class="btn" onclick="addSession()">Add to Log</button>
+  <button class="btn2" onclick="clearForm()">Clear</button>
+  <button class="btn2" onclick="downloadCSV()">Save CSV</button>
+</div>
 
       <div id="logEmpty" class="empty">No tire data logged yet.</div>
       <div id="tableWrap" class="table-wrap" style="display:none;">
