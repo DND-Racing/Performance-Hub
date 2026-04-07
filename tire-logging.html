@@ -807,11 +807,13 @@ notesBox2 {
 
   </div>
 </section>
-	  <section class="card" style="margin-top:14px;">
-  <div class="title">
-    <h2>Pit Crew Mode</h2>
+	 <div class="title">
+  <h2>Pit Crew Mode</h2>
+  <div style="display:flex; gap:10px; align-items:center;">
     <span class="pill">Last Used Tire Info</span>
+    <button class="btn3" type="button" onclick="scanPitCrewTire()">Scan Tire</button>
   </div>
+</div>
 
   <div id="pitCrewEmpty" class="empty">Scan a tire to see its most recent PSI, temps, and notes.</div>
 
@@ -1309,6 +1311,96 @@ function applyScannedTire(tireID) {
   } else {
     clearPitCrewInfo();
     setStatus(`New tire scanned: ${tireID}`);
+  }
+}
+	async function scanPitCrewTire() {
+  activeCorner = null; // important: this scan is not tied to LF/RF/LR/RR
+
+  const scannerUI = document.getElementById('qrScanner');
+  const qrReader = document.getElementById('qrReader');
+
+  if (scannerStarting) return;
+  scannerStarting = true;
+
+  try {
+    if (!window.isSecureContext) {
+      throw new Error('Camera requires HTTPS.');
+    }
+
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('Camera access is not available in this browser.');
+    }
+
+    if (qrScannerInstance) {
+      try { await qrScannerInstance.stop(); } catch {}
+      try { await qrScannerInstance.clear(); } catch {}
+      qrScannerInstance = null;
+    }
+
+    qrReader.innerHTML = '';
+    scannerUI.style.display = 'flex';
+
+    qrScannerInstance = new Html5Qrcode('qrReader');
+    setStatus('Starting pit crew scanner.');
+
+    try {
+      await qrScannerInstance.start(
+        { facingMode: { exact: 'environment' } },
+        { fps: 10, qrbox: 250 },
+        onPitCrewScanSuccess
+      );
+    } catch (err) {
+      await qrScannerInstance.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: 250 },
+        onPitCrewScanSuccess
+      );
+    }
+
+    setStatus('Pit crew scanner ready.');
+  } catch (err) {
+    console.error(err);
+    scannerUI.style.display = 'none';
+    setStatus(`Scanner failed: ${err.message || err}`, true);
+  } finally {
+    scannerStarting = false;
+  }
+}
+	function onPitCrewScanSuccess(decodedText) {
+  stopScanner();
+  loadPitCrewFromScan(decodedText);
+}
+	function loadPitCrewFromScan(decodedText) {
+  let tireID = decodedText;
+
+  try {
+    const parsed = JSON.parse(decodedText);
+    tireID = parsed.id || decodedText;
+  } catch {
+    // plain text QR, keep as-is
+  }
+
+  const match = [...entries].reverse().find(e => e.serial === tireID);
+
+  if (match) {
+    showPitCrewInfo(match);
+    setStatus(`Loaded pit crew data for ${tireID}`);
+  } else {
+    $('pitCrewEmpty').style.display = 'none';
+    $('pitCrewCard').style.display = 'block';
+
+    $('pitSerial').textContent = tireID || '-';
+    $('pitCorner').textContent = '-';
+    $('pitSession').textContent = '-';
+    $('pitDate').textContent = '-';
+    $('pitCold').textContent = '-';
+    $('pitHot').textContent = '-';
+    $('pitInner').textContent = '-';
+    $('pitCenter').textContent = '-';
+    $('pitOuter').textContent = '-';
+    $('pitNotes').textContent = 'No saved history found for this tire.';
+
+    setStatus(`Scanned ${tireID}, but no saved log history was found.`);
   }
 }
 </script>
