@@ -363,6 +363,7 @@ notesBox2 {
         <div><label>Tire PSI</label><input id="psi_lf" type="number" step="0.1"></div>
         <div><label>Frame Height</label><input id="fh_lf" type="number" step="0.01"></div>
 		<div><label>Caster</label><input id="rr_re_off" type="number"></div>
+     <div><label>Slider</label><input id="lf_sls" type="number"><\div> 
       </div>
     </div>
 
@@ -375,6 +376,7 @@ notesBox2 {
         <div><label>Tire PSI</label><input id="psi_rf" type="number" step="0.1"></div>
         <div><label>Frame Height</label><input id="fh_rf" type="number" step="0.01"></div>
 		<div><label>Caster</label><input id="rr_re_off" type="number"></div>
+      <div><label>Slider</label><input id="rf_sls" type="number"><\div>
       </div>
     </div>
 
@@ -391,7 +393,9 @@ notesBox2 {
 		<div><label>Panhard Inner</label><select id="pan_l_inner"><option></option><option>Top</option><option>Middle</option><option>Bottom</option></select></div>
         <div><label>Pan Hard Outer</label><select id="pan_l_outer"><option></option><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
 		<div><label>Rear End Offset</label><input id="rr_re_off" type="number"></div>
-		</div>
+		<div><label>KeyStock</label><input id="lr_kst" type="number"></div>
+      <div><label>Slider</label><input id="lr_sls" type="number"><\div>  
+      </div>
     </div>
 
     <div class="corner-card rr">
@@ -405,6 +409,8 @@ notesBox2 {
 		<div><label>Radius Rod Rearend</label><select id="pan_l_inner"><option></option><option>Top</option><option>Middle</option><option>Bottom</option></select></div>
         <div><label>Radius Rod Frame</label><select id="pan_l_outer"><option></option><option>1</option><option>2</option><option>3</option></select></div>
 		<div><label>Rear End Offset</label><input id="rr_re_off" type="number"></div>
+    	<div><label>KeyStock</label><input id="rr_kst" type="number"></div>
+      <div><label>Slider</label><input id="rr_sls" type="number"><\div>  
       </div>
     </div>
 
@@ -416,10 +422,6 @@ notesBox2 {
   </div>
 </div>
 
-  <div class="card" style="margin-top:14px;">
-    <div class="title"><h2>Set Up Notes</h2></div>
-	<div><textarea class="notesBox2" rows="6" id="notes" placeholder="Enter Notes Here"></textarea></div>
-  </div>
   
  
 
@@ -436,7 +438,9 @@ const ids = [
   "fh_lf","fh_rf","fh_lr","fh_rr",
   "psi_lf","psi_rf","psi_lr","psi_rr",
   "pan_l_inner","pan_l_outer","pan_r_inner","pan_r_outer",
-  "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_rear"
+  "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_rear",
+  "lf_sls","rf_sls","lr_sls","rr_sls",
+  "lr_kst","rr_kst"'
 ];
 
 function el(id){ return document.getElementById(id); }
@@ -647,7 +651,8 @@ function save(){
       "fh_lf","fh_rf","fh_lr","fh_rr",
       "psi_lf","psi_rf","psi_lr","psi_rr",
       "pan_l_inner","pan_l_outer","pan_r_inner","pan_r_outer",
-      "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_rear"
+      "rr_l_frame","rr_l_rear","rr_r_frame","rr_r_  "lf_sls","rf_sls","lr_sls","rr_sls",
+  "lr_kst","rr_kst"'
     ];
 
     const header = columns.join(",");
