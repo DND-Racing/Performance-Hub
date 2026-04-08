@@ -694,7 +694,7 @@ function save(){
     const track = safeName(d.track) || "no-track";
     const sess = safeName(d.session) || "no-session";
     const car = safeName(d.car) || "no-car";
-    const filename = `${date}__${track}__${sess}__${car}.csv`;
+    const filename = `${date}__${track}__${sess}__${car}_Setup.csv`;
 
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
@@ -756,35 +756,22 @@ function setDataFromObject(obj){
   computeAdjustments();
 }
 
-function loadCSV(event){
+function handleCSVLoad(event) {
   const file = event.target.files[0];
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = (e) => {
-    const text = String(e.target.result || "").trim();
-    const lines = text.split(/\r?\n/);
 
-    if (lines.length < 2){
-      el("status").textContent = "CSV file doesn't look valid.";
-      return;
-    }
+  reader.onload = function(e) {
+    const text = e.target.result;
 
-    const headers = parseCSVLine(lines[0]);
-    const values = parseCSVLine(lines[1]);
-
-    const obj = {};
-    headers.forEach((h, i) => {
-      obj[h] = values[i] ?? "";
-    });
-
-    setDataFromObject(obj);
-    el("status").textContent = "Loaded: " + file.name;
+    // 👉 call your existing load function here
+    loadCSV(text);
   };
 
   reader.readAsText(file);
 }
-
+  
 function openCSVPicker(){
   el("csvLoader").value = "";
   el("csvLoader").click();
