@@ -244,21 +244,9 @@
   </div>
 
   <div class="btnbar">
-    <!-- hidden file input -->
-    <input 
-      type="file" 
-      id="csvLoader" 
-      accept=".csv" 
-      style="display:none" 
-      onchange="handleCSVLoad(event)"
-    >
-
+    <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="handleCSVLoad(event)">
     <button class="btn3" onclick="location.href='index.html'">Home</button>
-
-    <!-- LOAD -->
     <button class="btn2" onclick="openCSVPicker()">Load CSV</button>
-
-    <!-- SAVE -->
     <button class="btn" onclick="save()">Save Setup</button>
   </div>
 </header>
@@ -798,6 +786,43 @@ el("date").valueAsDate = new Date();
 
 updateStatsLive();
 computeAdjustments();
+  
+function loadCSV(text){
+  const status = el("status");
+
+  try{
+    if (!text || !text.trim()){
+      if (status) status.textContent = "Load failed: CSV file is empty.";
+      return;
+    }
+
+    const lines = text
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .split("\n")
+      .filter(line => line.trim() !== "");
+
+    if (lines.length < 2){
+      if (status) status.textContent = "Load failed: CSV needs a header row and a data row.";
+      return;
+    }
+
+    const headers = parseCSVLine(lines[0]).map(h => h.trim());
+    const values  = parseCSVLine(lines[1]);
+
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header] = values[i] ?? "";
+    });
+
+    setDataFromObject(obj);
+
+    if (status) status.textContent = "CSV loaded successfully.";
+  } catch (err){
+    console.error(err);
+    if (status) status.textContent = "Load failed: " + (err?.message || err);
+  }
+}  
 </script>
 </body>
 </html>
