@@ -245,6 +245,9 @@
 
   <div class="btnbar">
     <button class="btn3" onclick="location.href='index.html'">Home</button>
+    <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
+  <button class="btn2" onclick="openCSVPicker()">Load CSV</button>
+  <button class="btn" onclick="save()">Save Setup</button>
   </div>
 </header>
 
