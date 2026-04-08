@@ -234,7 +234,7 @@
 </head>
 <body>
 
-<header>
+<header> 
   <div class="brand">
     <div class="logo"></div>
     <div>
@@ -244,10 +244,22 @@
   </div>
 
   <div class="btnbar">
-    <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
+    <!-- hidden file input -->
+    <input 
+      type="file" 
+      id="csvLoader" 
+      accept=".csv" 
+      style="display:none" 
+      onchange="handleCSVLoad(event)"
+    >
+
     <button class="btn3" onclick="location.href='index.html'">Home</button>
-  <button class="btn2" onclick="openCSVPicker()">Load CSV</button>
-  <button class="btn" onclick="save()">Save Setup</button>
+
+    <!-- LOAD -->
+    <button class="btn2" onclick="openCSVPicker()">Load CSV</button>
+
+    <!-- SAVE -->
+    <button class="btn" onclick="save()">Save Setup</button>
   </div>
 </header>
 
