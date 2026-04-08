@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="stylesheet" href="styles.css">
   <title>DND Racing Season Results Tracker</title>
   <style>
     :root{
@@ -33,19 +34,7 @@
       min-height:100vh;
     }
 
-    header{
-      position:sticky;
-      top:0;
-      z-index:10;
-      background:linear-gradient(180deg, rgba(20,20,34,.96), rgba(11,11,16,.88));
-      border-bottom:1px solid var(--line);
-      padding:14px 16px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      backdrop-filter: blur(10px);
-    }
+
 
     .brand{display:flex;align-items:center;gap:12px;}
 
@@ -578,18 +567,18 @@ notesBox2 {
   </style>
 </head>
 <body>
+<header>
   <div class="brand">
     <div class="logo"></div>
     <div>
-      <h1>Season Results</h1>
+      <h1>DND Racing</h1>
+      <div class="sub">Performance Hub</div>
     </div>
   </div>
-  <div class="btnbar">
-  <input type="file" id="csvLoader" accept=".csv" style="display:none" onchange="loadCSV(event)">
-  <button class="btn2" onclick="openCSVPicker()">Load Notes</button>
 
-  <button class="btn3" onclick="window.location.href='index.html'">Return Home</button>
-</div>
+  <div class="btnbar">
+    <button class="btn3" onclick="location.href='index.html'">Home</button>
+  </div>
 </header>
 
   <div class="wrap">
