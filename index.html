@@ -119,21 +119,18 @@
     }
 
     .car{
-      position:absolute;
-      left:0;
-      top:0;
-      width:165px;
-      transform:
-        translate(-50%, -50%)
-        translateY(-500px)
-        scaleX(-1);
-      transform-origin:center center;
-      filter:
-        drop-shadow(0 14px 20px rgba(0,0,0,.45))
-        drop-shadow(0 0 12px rgba(255,46,166,.18));
-    }
-.car::before{
-  animation:dustPulse .8s ease-in-out infinite alternate;
+  position:absolute;
+  left:0;
+  top:0;
+  width:165px;
+  transform:
+    translate(-50%, -50%)
+    translateY(-500px)
+    rotate(-90deg);
+  transform-origin:center center;
+  filter:
+    drop-shadow(0 14px 20px rgba(0,0,0,.45))
+    drop-shadow(0 0 12px rgba(255,46,166,.18));
 }
 
 @keyframes dustPulse{
