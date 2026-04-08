@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
   <title>DND Racing Tire Logger</title>
   <style>
     :root{
@@ -30,26 +31,7 @@
       min-height:100vh;
     }
 
-    header{
-      position:sticky; top:0; z-index:10;
-      background:linear-gradient(180deg, rgba(20,20,34,.95), rgba(11,11,16,.85));
-      border-bottom:1px solid var(--line);
-      padding:14px 16px;
-      display:flex; align-items:center; justify-content:space-between; gap:12px;
-    }
-    .brand{display:flex; align-items:center; gap:12px;}
-    .logo{
-  width:44px;
-  height:44px;
-  border-radius:12px;
-
-  background-image: url("logo.jpg");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
-}
+    
 
     .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
 
@@ -283,21 +265,19 @@
   <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo"></div>
-      <div>
-        <h1>Tire Logging</h1>
-        <div class="sub">QR scan + pit crew lookup + CSV save/load</div>
-      </div>
+ <header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <h1>DND Racing</h1>
+      <div class="sub">Performance Hub</div>
     </div>
+  </div>
 
-    <div class="btnbar">
-      <input id="csvLoader" type="file" accept=".csv" hidden />
-      <button class="btn2" type="button" onclick="openCSVPicker()">Load CSV</button>
-      <button class="btn3" type="button" onclick="window.location.href='index.html'">Return Home</button>
-    </div>
-  </header>
+  <div class="btnbar">
+    <button class="btn3" onclick="location.href='index.html'">Home</button>
+  </div>
+</header>
 
   <div class="wrap">
     <div class="grid cols2">
