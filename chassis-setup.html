@@ -248,6 +248,7 @@
     <button class="btn3" onclick="location.href='index.html'">Home</button>
     <button class="btn2" onclick="openCSVPicker()">Load CSV</button>
     <button class="btn" onclick="save()">Save Setup</button>
+    <button class="btn" onclick="emailFilteredCSV()">Share Setup</button>
   </div>
 </header>
 
@@ -823,6 +824,46 @@ function loadCSV(text){
     if (status) status.textContent = "Load failed: " + (err?.message || err);
   }
 }  
+  async function emailFilteredCSV() {
+      const filteredLog = getFilteredLog();
+
+      if (!filteredLog.length) {
+        showStatus('There are no filtered log entries to email.', true);
+        return;
+      }
+
+      const fileName = getExportFileName();
+      const blob = createCSVBlob(filteredLog);
+      const file = new File([blob], fileName, { type: 'text/csv' });
+      const subject = 'Tool Checklist Log Export';
+      const body = [
+        'Attached is the Chassis Setup export.',
+        
+      ].join('\n');
+
+      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({
+            title: subject,
+            text: body,
+            files: [file]
+          });
+          showStatus('Share sheet opened. Choose your mail app to send the CSV.');
+          return;
+        } catch (error) {
+          if (error && error.name === 'AbortError') {
+            showStatus('Email export canceled.', true);
+            return;
+          }
+        }
+      }
+
+      downloadBlob(blob, fileName);
+      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\nThe CSV file has been downloaded. Attach it to this email before sending.')}`;
+      window.location.href = mailto;
+      showStatus('CSV downloaded and mail app opened. Attach the downloaded CSV to send it.');
+    }
+
 </script>
 </body>
 </html>
