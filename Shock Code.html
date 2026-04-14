@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="styles.css">
+  <title>DND Racing Shock Logger</title>
+  <style>
+    :root{
+      --bg:#0b0b10;
+      --panel:#141422;
+      --panel2:#10101a;
+      --text:#f3f3f7;
+      --muted:#b9b9c9;
+      --pink:#ff2ea6;
+      --line:#2a2a3b;
+      --good:#2effa6;
+      --warn:#ffd84d;
+    }
+
+    *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        linear-gradient(rgba(8,8,14,0.88), rgba(8,8,14,0.94)),
+        radial-gradient(circle at top right, rgba(255,46,166,0.16), transparent 22%),
+        radial-gradient(circle at bottom left, rgba(255,92,193,0.10), transparent 18%),
+        var(--bg);
+      min-height:100vh;
+    }
+
+    
+
+    .brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+
+    .logo{
+  width:46px;
+  height:46px;
+  border-radius:12px;
+  background:
+    url("logo.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display:grid;
+  place-items:center;
+  color:#190113;
+  font-weight:900;
+  letter-spacing:.5px;
+  box-shadow:0 0 0 2px rgba(255,46,166,.25), 0 10px 30px rgba(255,46,166,.18);
+}
+
+    h1{font-size:18px;margin:0;letter-spacing:.5px;}
+    .sub{color:var(--muted);font-size:12px;margin-top:2px;}
+
+    .wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:16px;
+    }
+
+    .grid{display:grid;gap:14px;}
+    .grid.cols2{grid-template-columns:1.2fr .8fr;}
+    .grid.cols3{grid-template-columns:repeat(3,1fr);}
+    .grid.cols4{grid-template-columns:repeat(4,1fr);}
+    .row{display:grid;gap:10px;}
+    .row.cols2{grid-template-columns:repeat(2,1fr);}
+    .row.cols3{grid-template-columns:repeat(3,1fr);}
+    .row.cols4{grid-template-columns:repeat(4,1fr);}
+
+    @media(max-width:1100px){
+      .grid.cols2,.grid.cols3,.grid.cols4,.row.cols2,.row.cols3,.row.cols4{grid-template-columns:1fr;}
+      header{flex-direction:column;align-items:flex-start;}
+    }
+
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,.012));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      box-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+
+    .title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+
+    .title h2{margin:0;font-size:15px;letter-spacing:.4px;}
+
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      border:1px solid var(--line);
+      padding:6px 10px;
+      border-radius:999px;
+      white-space:nowrap;
+    }
+
+    label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;}
+
+    input,select,textarea{
+      width:100%;
+      background:var(--panel2);
+      border:1px solid var(--line);
+      color:var(--text);
+      border-radius:12px;
+      padding:12px;
+      font-size:15px;
+      outline:none;
+    }
+
+    input:focus,select:focus,textarea:focus{
+      border-color:rgba(255,46,166,.7);
+      box-shadow:0 0 0 4px rgba(255,46,166,.15);
+    }
+
+    textarea{min-height:94px;resize:vertical;}
+
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+
+    button{
+      border:none;
+      cursor:pointer;
+      border-radius:14px;
+      padding:14px 16px;
+      font-size:15px;
+      font-weight:700;
+      letter-spacing:.4px;
+    }
+
+    .btn{
+      background:linear-gradient(180deg, rgba(255,46,166,1), rgba(255,46,166,.65));
+      color:#140012;
+      box-shadow:0 12px 26px rgba(255,46,166,.25);
+    }
+
+    .btn2{
+      background:transparent;
+      border:1px solid rgba(255,46,166,.55);
+      color:var(--text);
+    }
+
+    .btn3{
+      background:linear-gradient(180deg, rgba(46,255,166,.9), rgba(46,255,166,.6));
+      color:#032116;
+      box-shadow:0 12px 26px rgba(46,255,166,.18);
+    }
+
+    .status{font-size:13px;color:var(--muted);margin-top:10px;min-height:18px;}
+
+    .bigstats{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .stat{
+      flex:1;
+      min-width:180px;
+      background:rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+    }
+
+    .stat .k{font-size:12px;color:var(--muted);}
+    .stat .v{font-size:22px;font-weight:800;margin-top:4px;word-break:break-word;}
+    .v.good{color:var(--good);}
+    .v.warn{color:var(--warn);}
+
+    .tire-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:14px;
+    }
+
+    @media(max-width:900px){.tire-grid{grid-template-columns:1fr;}}
+
+    .corner-card{
+      border:1px dashed rgba(255,46,166,.35);
+      border-radius:16px;
+      padding:12px;
+      background:rgba(255,46,166,.04);
+    }
+
+    .corner-card h3{
+      margin:0 0 10px 0;
+      font-size:14px;
+      letter-spacing:.5px;
+    }
+
+    .table-wrap{overflow:auto;border-radius:14px;border:1px solid var(--line);}
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+      background:rgba(255,255,255,.02);
+    }
+
+    th,td{
+      padding:10px 12px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      font-size:13px;
+      vertical-align:top;
+    }
+
+    th{
+      color:var(--muted);
+      font-weight:700;
+      background:rgba(255,255,255,.03);
+      position:sticky;
+      top:0;
+    }
+
+    tr:hover td{background:rgba(255,255,255,.025);}
+
+    .empty{
+      padding:18px;
+      border:1px dashed rgba(255,46,166,.25);
+      border-radius:14px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .tag{
+      display:inline-block;
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,46,166,.4);
+      color:var(--text);
+      background:rgba(255,46,166,.08);
+    }
+
+    .serial-scan{
+      display:flex;
+      gap:6px;
+      align-items:stretch;
+    }
+    .serial-scan input{flex:1;}
+
+    @media print {
+      body{background:#fff !important;color:#000 !important;}
+      header,.btnbar,.status,#csvLoader,#qrScanner{display:none !important;}
+      .wrap{max-width:100%;padding:0;}
+      .card,.corner-card,.stat,.table-wrap{background:#fff !important;color:#000 !important;box-shadow:none !important;border:1px solid #ccc !important;}
+      input,select,textarea{border:none !important;background:transparent !important;color:#000 !important;padding:3px 0 !important;}
+      label,.pill,.sub,.k{color:#555 !important;}
+      .grid,.row,.tire-grid{display:block !important;}
+      .card,.corner-card{margin-bottom:10px !important;break-inside:avoid;page-break-inside:avoid;}
+      .v,.v.good,.v.warn{color:#000 !important;}
+      @page { size: letter portrait; margin: 0.4in; }
+    }
+  </style>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+ <header>
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <h1>DND Racing</h1>
+      <div class="sub">Performance Hub</div>
+    </div>
+  </div>
+
+  <div class="btnbar">
+    <button class="btn3" onclick="location.href='index.html'">Home</button>
+  </div>
+</header>
+
+  <div class="wrap">
+    <div class="row">
+      <section class="card">
+        <div class="title">
+          <h2>Session Info</h2>
+          <span class="pill">Info</span>
+        </div>
+
+        <div class="row cols4">
+          <div>
+            <label for="date">Date</label>
+            <input id="date" type="date" />
+          </div>
+          <div>
+            <label for="track">Track</label>
+            <input id="track" type="text" placeholder="Merrittville" />
+          </div>
+          <div>
+            <label for="session">Session</label>
+            <select id="session">
+              <option>Hot Laps</option>
+              <option>Qualifying</option>
+              <option>Heat Race</option>
+              <option>Feature</option>
+              <option>Practice</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="row cols4" style="margin-top:10px;">
+          <div>
+            <label for="car">Car</label>
+            <input id="car" type="text" placeholder="13M" />
+          </div>
+          <div>
+            <label for="driver">Driver</label>
+            <input id="driver" type="text" placeholder="Dan McKay" />
+          </div>
+          
+        </div>
+
+        <div style="margin-top:10px;">
+          <label for="sessionNotes">Session Notes</label>
+          <textarea id="sessionNotes" placeholder="Track condition, setup notes, handling comments..."></textarea>
+        </div>
+      </section>
+
+
+    
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Shock Entry</h2>
+        <span class="pill">LF / RF / LR / RR</span>
+      </div>
+
+      <div class="tire-grid">
+        <div class="corner-card">
+          <h3>Left Front</h3>
+          <div class="row cols3">
+            <div>
+              <label for="lf_brand">Brand</label>
+              <input id="lf_brand" type="text" placeholder="Integra" />
+            </div>
+            <div>
+              <label for="lf_valve">Valve</label>
+              <input id="lf_valve" type="text" placeholder="FSR" />
+            </div>
+            <div>
+              <label for="lf_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="lf_serial" type="text" placeholder="LF-001" />
+                <button class="btn3" type="button" onclick="scanShock('lf')">Scan</button>
+              </div>
+            </div>
+          </div>
+          <div class="row cols4" style="margin-top:10px;">
+            <div><label for="lf_gas">Gas Pressure</label><input id="lf_gas" type="number" step="0.1" /></div>
+            <div><label for="lf_spring">Spring Rate</label><input id="lf_spring" type="number" step="0.1" /></div>
+            <div><label for="lf_comp">Compressed Height</label><input id="lf_comp" type="number" step="0.001" /></div>
+            <div><label for="lf_eye">EYE to EYE</label><input id="lf_eye" type="number" step="0.001" /></div>
+          </div>
+        </div>
+
+ <div class="corner-card">
+          <h3>Right Front</h3>
+          <div class="row cols3">
+            <div>
+              <label for="rf_brand">Brand</label>
+              <input id="rf_brand" type="text" placeholder="Integra" />
+            </div>
+            <div>
+              <label for="rf_valve">Valve</label>
+              <input id="rf_valve" type="text" placeholder="FSR" />
+            </div>
+            <div>
+              <label for="rf_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="rf_serial" type="text" placeholder="LF-001" />
+                <button class="btn3" type="button" onclick="scanShock('rf')">Scan</button>
+              </div>
+            </div>
+          </div>
+        
+<div class="row cols4" style="margin-top:10px;">
+            <div><label for="rf_gas">Gas Pressure</label><input id="rf_gas" type="number" step="0.1" /></div>
+            <div><label for="rf_spring">Spring Rate</label><input id="rf_spring" type="number" step="0.1" /></div>
+            <div><label for="rf_comp">Compressed Height</label><input id="rf_comp" type="number" step="0.001" /></div>
+            <div><label for="rf_eye">EYE to EYE</label><input id="rf_eye" type="number" step="0.001" /></div>
+          </div>
+        </div>
+ <div class="corner-card">
+          <h3>Left Rear</h3>
+          <div class="row cols3">
+            <div>
+              <label for="lf_brand">Brand</label>
+              <input id="lr_brand" type="text" placeholder="Integra" />
+            </div>
+            <div>
+              <label for="lr_valve">Valve</label>
+              <input id="lr_valve" type="text" placeholder="FSR" />
+            </div>
+            <div>
+              <label for="lr_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="lr_serial" type="text" placeholder="LF-001" />
+                <button class="btn3" type="button" onclick="scanShock('lr')">Scan</button>
+              </div>
+            </div>
+          </div>
+
+        <div class="row cols4" style="margin-top:10px;">
+            <div><label for="lr_gas">Gas Pressure</label><input id="lr_gas" type="number" step="0.1" /></div>
+            <div><label for="lr_spring">Spring Rate</label><input id="lr_spring" type="number" step="0.1" /></div>
+            <div><label for="lr_comp">Compressed Height</label><input id="lr_comp" type="number" step="0.001" /></div>
+            <div><label for="lr_eye">EYE to EYE</label><input id="lr_eye" type="number" step="0.001" /></div>
+          </div>
+        </div>
+ <div class="corner-card">
+          <h3>Right Rear</h3>
+          <div class="row cols3">
+            <div>
+              <label for="rr_brand">Brand</label>
+              <input id="rr_brand" type="text" placeholder="Integra" />
+            </div>
+            <div>
+              <label for="rr_valve">Valve</label>
+              <input id="rr_valve" type="text" placeholder="FSR" />
+            </div>
+            <div>
+              <label for="rr_serial">Serial</label>
+              <div class="serial-scan">
+                <input id="rr_serial" type="text" placeholder="LF-001" />
+                <button class="btn3" type="button" onclick="scanShock('rr')">Scan</button>
+              </div>
+            </div>
+          </div>
+
+        <div class="row cols4" style="margin-top:10px;">
+            <div><label for="rr_gas">Gas Pressure</label><input id="rr_gas" type="number" step="0.1" /></div>
+            <div><label for="rr_spring">Spring Rate</label><input id="rr_spring" type="number" step="0.1" /></div>
+            <div><label for="rr_comp">Compressed Height</label><input id="rr_comp" type="number" step="0.001" /></div>
+            <div><label for="rr_eye">EYE to EYE</label><input id="rr_eye" type="number" step="0.001" /></div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <div class="btnbar" style="margin-top:14px;">
+        <button class="btn2" type="button" id="clearBtn">Clear Form</button>
+        <button class="btn" type="button" id="addBtn">Add Session to Log</button>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Pit Crew Mode</h2>
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+          <span class="pill">Last Used Tire Info</span>
+          <button class="btn3" type="button" onclick="scanPitCrewShock()">Scan Shock</button>
+        </div>
+      </div>
+
+      <div id="pitCrewEmpty" class="empty">Scan a Shock to see its most recent PSI, Valving, and notes.</div>
+
+      <div id="pitCrewCard" style="display:none;">
+        <div class="bigstats">
+          <div class="stat">
+            <div class="k">Tire ID</div>
+            <div class="v" id="pitSerial">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Corner</div>
+            <div class="v" id="pitCorner">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Session</div>
+            <div class="v" id="pitSession">-</div>
+          </div>
+          <div class="stat">
+            <div class="k">Last Date</div>
+            <div class="v" id="pitDate">-</div>
+          </div>
+        </div>
+
+        <div class="grid cols2" style="margin-top:12px;">
+          <div class="card">
+            <div class="title">
+              <h2>Pressure</h2>
+              <span class="pill">Most Recent</span>
+            </div>
+            <div class="bigstats">
+              <div class="stat">
+                <div class="k">Valving</div>
+                <div class="v good" id="pitValve">-</div>
+              </div>
+              <div class="stat">
+                <div class="k">Spring Rate</div>
+                <div class="v warn" id="pitSpring">-</div>
+              </div>
+<div class="stat">
+                <div class="k">Gas Pressure</div>
+                <div class="v warn" id="pitGas">-</div>
+              </div>
+<div class="stat">
+                <div class="k">Eye To Eye</div>
+                <div class="v warn" id="pitEye">-</div>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="title">
+            <h2>Last Session Notes</h2>
+            <span class="pill">Track Notes</span>
+          </div>
+          <div id="pitNotes" class="empty" style="text-align:left;">No notes saved for this tire.</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:14px;">
+      <div class="title">
+        <h2>Saved Log</h2>
+        <span class="pill">Browser Memory + CSV</span>
+      </div>
+
+      <div class="btnbar" style="justify-content:flex-start; margin-bottom:12px;">
+        <button class="btn3" type="button" id="saveCsvBtn">Save CSV</button>
+        <button class="btn2" type="button" id="printBtn">Print View</button>
+        <input type="file" id="csvLoader" accept=".csv,text/csv" style="display:none" />
+<button class="btn2" type="button" onclick="openCSVPicker()">Load CSV</button>
+</div>
+
+      <div id="logEmpty" class="empty">No tire data logged yet.</div>
+
+      <div id="tableWrap" class="table-wrap" style="display:none;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Track</th>
+              <th>Session</th>
+              <th>Corner</th>
+              <th>Brand</th>
+              <th>Valving</th>
+              <th>Gas Pressure</th>
+              <th>Eye to Eye</th>
+              <th>Serial</th>
+            </tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div id="qrScanner" style="
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.92);
+    z-index:9999;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    padding:20px;
+  ">
+    <div id="qrReader" style="width:min(90vw, 340px);"></div>
+    <button class="btn2" style="margin-top:15px;" type="button" onclick="stopScanner()">Cancel</button>
+  </div>
+
+ <script>
+  const $ = (id) => document.getElementById(id);
+  const storageKey = 'dnd_shock_logger_entries';
+  const corners = ['lf', 'rf', 'lr', 'rr'];
+  const cornerNames = { lf: 'LF', rf: 'RF', lr: 'LR', rr: 'RR' };
+
+  let entries = [];
+  let qrScannerInstance = null;
+  let activeCorner = null;
+  let scanMode = null;
+  let scannerStarting = false;
+
+  function setToday() {
+    const today = new Date();
+    const y = today.getFullYear();
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const d = String(today.getDate()).padStart(2, '0');
+    $('date').value = `${y}-${m}-${d}`;
+  }
+
+  function num(v) {
+    if (v === '' || v === null || v === undefined) return '';
+    const n = parseFloat(v);
+    return Number.isFinite(n) ? n : '';
+  }
+
+  function setStatus(message, isWarn = false) {
+    const el = $('status');
+    if (!el) return;
+    el.textContent = message;
+    el.style.color = isWarn ? 'var(--warn)' : 'var(--muted)';
+  }
+
+  function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function safeVal(value) {
+    return value === '' || value === null || value === undefined
+      ? ''
+      : escapeHtml(String(value));
+  }
+
+  function readSessionHeader() {
+    return {
+      date: $('date')?.value || '',
+      track: $('track')?.value.trim() || '',
+      session: $('session')?.value || '',
+      car: $('car')?.value.trim() || '',
+      driver: $('driver')?.value.trim() || '',
+      notes: $('sessionNotes')?.value.trim() || ''
+    };
+  }
+
+  function readCorner(corner) {
+    return {
+      corner: cornerNames[corner],
+      brand: $(`${corner}_brand`)?.value.trim() || '',
+      valve: $(`${corner}_valve`)?.value.trim() || '',
+      serial: $(`${corner}_serial`)?.value.trim() || '',
+      gas_pressure: num($(`${corner}_gas`)?.value),
+      spring_rate: num($(`${corner}_spring`)?.value),
+      compressed_height: num($(`${corner}_comp`)?.value),
+      eye_to_eye: num($(`${corner}_eye`)?.value)
+    };
+  }
+
+  function hasCornerData(cornerData) {
+    return Object.entries(cornerData).some(
+      ([key, value]) => key !== 'corner' && value !== ''
+    );
+  }
+
+  function addSession() {
+    const header = readSessionHeader();
+    const newRows = [];
+
+    for (const c of corners) {
+      const cornerData = readCorner(c);
+      if (hasCornerData(cornerData)) {
+        newRows.push({ ...header, ...cornerData });
+      }
+    }
+
+    if (!newRows.length) {
+      setStatus('Enter data in at least one shock corner before adding.', true);
+      return;
+    }
+
+    entries = [...entries, ...newRows];
+    persist();
+    render();
+    setStatus(`Added ${newRows.length} shock entr${newRows.length === 1 ? 'y' : 'ies'} to the log.`);
+  }
+
+  function persist() {
+    localStorage.setItem(storageKey, JSON.stringify(entries));
+  }
+
+  function loadStored() {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      entries = raw ? JSON.parse(raw) : [];
+      if (!Array.isArray(entries)) entries = [];
+    } catch (err) {
+      console.error(err);
+      entries = [];
+    }
+  }
+
+  function render() {
+    const tbody = $('logBody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    if (!entries.length) {
+      $('logEmpty').style.display = 'block';
+      $('tableWrap').style.display = 'none';
+      return;
+    }
+
+    $('logEmpty').style.display = 'none';
+    $('tableWrap').style.display = 'block';
+
+    for (const row of entries) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${escapeHtml(row.date || '')}</td>
+        <td>${escapeHtml(row.track || '')}</td>
+        <td><span class="tag">${escapeHtml(row.session || '')}</span></td>
+        <td>${escapeHtml(row.corner || '')}</td>
+        <td>${escapeHtml(row.brand || '')}</td>
+        <td>${escapeHtml(row.valve || '')}</td>
+        <td>${safeVal(row.gas_pressure)}</td>
+        <td>${safeVal(row.eye_to_eye)}</td>
+        <td>${escapeHtml(row.serial || '')}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  function clearForm() {
+    document.querySelectorAll('input:not([type=file]), textarea').forEach((el) => {
+      if (el.id !== 'date') el.value = '';
+    });
+
+    if ($('session')) $('session').selectedIndex = 0;
+    setToday();
+    clearPitCrewInfo();
+    setStatus('Form cleared.');
+  }
+
+  function toCSV(rows) {
+    const headers = [
+      'date',
+      'track',
+      'session',
+      'car',
+      'driver',
+      'notes',
+      'corner',
+      'brand',
+      'valve',
+      'serial',
+      'gas_pressure',
+      'spring_rate',
+      'compressed_height',
+      'eye_to_eye'
+    ];
+
+    const esc = (v) => {
+      const s = v === null || v === undefined ? '' : String(v);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g, '""') + '"' : s;
+    };
+
+    const lines = [headers.join(',')];
+    for (const row of rows) {
+      lines.push(headers.map((h) => esc(row[h])).join(','));
+    }
+    return lines.join('\n');
+  }
+
+  function downloadCSV() {
+    if (!entries.length) {
+      setStatus('There is no data to export yet.', true);
+      return;
+    }
+
+    const csv = toCSV(entries);
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = $('date')?.value || 'shock-log';
+
+    a.href = url;
+    a.download = `dnd-shock-log-${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    setStatus('CSV saved.');
+  }
+
+  function parseCSV(text) {
+    const rows = [];
+    let row = [];
+    let cell = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i++) {
+      const ch = text[i];
+      const next = text[i + 1];
+
+      if (ch === '"') {
+        if (inQuotes && next === '"') {
+          cell += '"';
+          i++;
+        } else {
+          inQuotes = !inQuotes;
+        }
+      } else if (ch === ',' && !inQuotes) {
+        row.push(cell);
+        cell = '';
+      } else if ((ch === '\n' || ch === '\r') && !inQuotes) {
+        if (ch === '\r' && next === '\n') i++;
+        row.push(cell);
+        if (row.some((v) => v !== '')) rows.push(row);
+        row = [];
+        cell = '';
+      } else {
+        cell += ch;
+      }
+    }
+
+    if (cell !== '' || row.length) {
+      row.push(cell);
+      if (row.some((v) => v !== '')) rows.push(row);
+    }
+
+    return rows;
+  }
+
+  function normalizeImportedRow(row) {
+    return {
+      date: row.date ?? '',
+      track: row.track ?? '',
+      session: row.session ?? '',
+      car: row.car ?? '',
+      driver: row.driver ?? '',
+      notes: row.notes ?? '',
+      corner: row.corner ?? '',
+      brand: row.brand ?? '',
+      valve: row.valve ?? row.valving ?? '',
+      serial: row.serial ?? '',
+      gas_pressure: row.gas_pressure ?? '',
+      spring_rate: row.spring_rate ?? '',
+      compressed_height: row.compressed_height ?? '',
+      eye_to_eye: row.eye_to_eye ?? ''
+    };
+  }
+
+  function loadCSVFile(file) {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      try {
+        const text = String(reader.result || '');
+
+        if (!text.trim()) {
+          setStatus('The selected CSV file is empty.', true);
+          return;
+        }
+
+        const parsed = parseCSV(text);
+        if (!parsed.length) {
+          setStatus('Could not read that CSV file.', true);
+          return;
+        }
+
+        const headers = parsed[0].map((h) => String(h || '').trim());
+        const rows = [];
+
+        for (let i = 1; i < parsed.length; i++) {
+          const values = parsed[i];
+          const row = {};
+          headers.forEach((h, idx) => {
+            row[h] = values[idx] ?? '';
+          });
+
+          const normalized = normalizeImportedRow(row);
+
+          const hasData = Object.values(normalized).some((v) => v !== '');
+          if (hasData) rows.push(normalized);
+        }
+
+        entries = rows;
+        persist();
+        render();
+        clearPitCrewInfo();
+        setStatus(`Loaded ${rows.length} rows from CSV.`);
+      } catch (err) {
+        console.error(err);
+        setStatus('Could not read that CSV file.', true);
+      }
+    };
+
+    reader.readAsText(file);
+  }
+
+  function openCSVPicker() {
+    $('csvLoader')?.click();
+  }
+
+  function loadCSV(event) {
+    const file = event.target.files?.[0];
+    if (file) loadCSVFile(file);
+    event.target.value = '';
+  }
+
+  function showPitCrewInfo(row) {
+    $('pitCrewEmpty').style.display = 'none';
+    $('pitCrewCard').style.display = 'block';
+
+    $('pitSerial').textContent = row.serial || '-';
+    $('pitCorner').textContent = row.corner || '-';
+    $('pitSession').textContent = row.session || '-';
+    $('pitDate').textContent = row.date || '-';
+
+    $('pitValve').textContent = row.valve !== '' ? row.valve : '-';
+    $('pitSpring').textContent = row.spring_rate !== '' ? row.spring_rate : '-';
+    $('pitGas').textContent = row.gas_pressure !== '' ? row.gas_pressure : '-';
+    $('pitEye').textContent = row.eye_to_eye !== '' ? row.eye_to_eye : '-';
+
+    $('pitNotes').textContent =
+      row.notes && String(row.notes).trim()
+        ? row.notes
+        : 'No notes saved for this shock.';
+  }
+
+  function clearPitCrewInfo() {
+    $('pitCrewEmpty').style.display = 'block';
+    $('pitCrewCard').style.display = 'none';
+
+    $('pitSerial').textContent = '-';
+    $('pitCorner').textContent = '-';
+    $('pitSession').textContent = '-';
+    $('pitDate').textContent = '-';
+    $('pitValve').textContent = '-';
+    $('pitSpring').textContent = '-';
+    $('pitGas').textContent = '-';
+    $('pitEye').textContent = '-';
+    $('pitNotes').textContent = 'No notes saved for this shock.';
+  }
+
+  function fillCornerFromRow(corner, row) {
+    $(`${corner}_serial`).value = row.serial || '';
+    $(`${corner}_brand`).value = row.brand || '';
+    $(`${corner}_valve`).value = row.valve || '';
+    $(`${corner}_gas`).value = row.gas_pressure || '';
+    $(`${corner}_spring`).value = row.spring_rate || '';
+    $(`${corner}_comp`).value = row.compressed_height || '';
+    $(`${corner}_eye`).value = row.eye_to_eye || '';
+  }
+
+  function tryParseQrPayload(decodedText) {
+    try {
+      const parsed = JSON.parse(decodedText);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          mode: 'json',
+          id: parsed.id || '',
+          data: parsed
+        };
+      }
+    } catch (err) {}
+
+    return {
+      mode: 'plain',
+      id: decodedText,
+      data: null
+    };
+  }
+
+  function applyScannedShock(decodedText) {
+    const parsed = tryParseQrPayload(decodedText);
+
+    if (scanMode === 'pit') {
+      loadPitCrewFromScan(parsed);
+      return;
+    }
+
+    if (!activeCorner) return;
+
+    if (parsed.mode === 'json') {
+      const data = parsed.data;
+
+      $(`${activeCorner}_serial`).value = data.id || '';
+      $(`${activeCorner}_brand`).value = data.brand || '';
+      $(`${activeCorner}_valve`).value = data.valve || '';
+      $(`${activeCorner}_gas`).value = data.gas_pressure ?? '';
+      $(`${activeCorner}_spring`).value = data.spring_rate ?? '';
+      $(`${activeCorner}_comp`).value = data.compressed_height ?? '';
+      $(`${activeCorner}_eye`).value = data.eye_to_eye ?? '';
+
+      showPitCrewInfo({
+        serial: data.id || '',
+        corner: cornerNames[activeCorner] || '',
+        session: 'QR Data',
+        date: '',
+        valve: data.valve ?? '',
+        spring_rate: data.spring_rate ?? '',
+        gas_pressure: data.gas_pressure ?? '',
+        eye_to_eye: data.eye_to_eye ?? '',
+        notes: data.notes ?? ''
+      });
+
+      setStatus(`Loaded QR data into ${cornerNames[activeCorner]}.`);
+      return;
+    }
+
+    const shockID = parsed.id.trim();
+    $(`${activeCorner}_serial`).value = shockID;
+
+    const match = [...entries].reverse().find((e) => String(e.serial).trim() === shockID);
+
+    if (match) {
+      fillCornerFromRow(activeCorner, match);
+      showPitCrewInfo(match);
+      setStatus(`Loaded saved shock history for ${shockID}.`);
+    } else {
+      clearPitCrewInfo();
+      setStatus(`New shock scanned: ${shockID}`);
+    }
+  }
+
+  function loadPitCrewFromScan(parsed) {
+    if (parsed.mode === 'json') {
+      const data = parsed.data;
+
+      showPitCrewInfo({
+        serial: data.id || '',
+        corner: '',
+        session: 'QR Data',
+        date: '',
+        valve: data.valve ?? '',
+        spring_rate: data.spring_rate ?? '',
+        gas_pressure: data.gas_pressure ?? '',
+        eye_to_eye: data.eye_to_eye ?? '',
+        notes: data.notes ?? ''
+      });
+
+      setStatus(`Loaded pit crew QR data for ${data.id || 'shock'}.`);
+      return;
+    }
+
+    const shockID = parsed.id.trim();
+    const match = [...entries].reverse().find((e) => String(e.serial).trim() === shockID);
+
+    if (match) {
+      showPitCrewInfo(match);
+      setStatus(`Loaded pit crew data for ${shockID}.`);
+    } else {
+      $('pitCrewEmpty').style.display = 'none';
+      $('pitCrewCard').style.display = 'block';
+
+      $('pitSerial').textContent = shockID || '-';
+      $('pitCorner').textContent = '-';
+      $('pitSession').textContent = '-';
+      $('pitDate').textContent = '-';
+      $('pitValve').textContent = '-';
+      $('pitSpring').textContent = '-';
+      $('pitGas').textContent = '-';
+      $('pitEye').textContent = '-';
+      $('pitNotes').textContent = 'No saved history found for this shock.';
+
+      setStatus(`Scanned ${shockID}, but no saved log history was found.`);
+    }
+  }
+
+  async function startScanner(onMode) {
+    const scannerUI = $('qrScanner');
+    const qrReader = $('qrReader');
+
+    if (scannerStarting) return;
+    scannerStarting = true;
+
+    try {
+      if (!window.isSecureContext) {
+        throw new Error('Camera requires HTTPS.');
+      }
+
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera access is not available in this browser.');
+      }
+
+      if (qrScannerInstance) {
+        try { await qrScannerInstance.stop(); } catch {}
+        try { await qrScannerInstance.clear(); } catch {}
+        qrScannerInstance = null;
+      }
+
+      qrReader.innerHTML = '';
+      scannerUI.style.display = 'flex';
+
+      qrScannerInstance = new Html5Qrcode('qrReader');
+
+      try {
+        await qrScannerInstance.start(
+          { facingMode: { exact: 'environment' } },
+          { fps: 10, qrbox: 250 },
+          onScanSuccess
+        );
+      } catch (err) {
+        await qrScannerInstance.start(
+          { facingMode: 'environment' },
+          { fps: 10, qrbox: 250 },
+          onScanSuccess
+        );
+      }
+
+      setStatus(onMode === 'pit'
+        ? 'Pit crew scanner ready. Point camera at QR code.'
+        : 'Scanner ready. Point camera at QR code.');
+    } catch (err) {
+      console.error('Scanner start failed:', err);
+      scannerUI.style.display = 'none';
+      const msg = err?.message || String(err);
+      setStatus(`Scanner failed: ${msg}`, true);
+    } finally {
+      scannerStarting = false;
+    }
+  }
+
+  function scanShock(corner) {
+    activeCorner = corner;
+    scanMode = 'corner';
+    startScanner('corner');
+  }
+
+  function scanPitCrewShock() {
+    activeCorner = null;
+    scanMode = 'pit';
+    startScanner('pit');
+  }
+
+  function onScanSuccess(decodedText) {
+    stopScanner();
+    applyScannedShock(decodedText);
+  }
+
+  async function stopScanner() {
+    try {
+      if (qrScannerInstance) {
+        try { await qrScannerInstance.stop(); } catch {}
+        try { await qrScannerInstance.clear(); } catch {}
+      }
+    } finally {
+      qrScannerInstance = null;
+      $('qrScanner').style.display = 'none';
+    }
+  }
+
+  $('addBtn')?.addEventListener('click', addSession);
+  $('clearBtn')?.addEventListener('click', clearForm);
+  $('saveCsvBtn')?.addEventListener('click', downloadCSV);
+  $('printBtn')?.addEventListener('click', () => window.print());
+  $('csvLoader')?.addEventListener('change', loadCSV);
+
+  setToday();
+  loadStored();
+  render();
+  clearPitCrewInfo();
+  setStatus(`Loaded ${entries.length} saved entr${entries.length === 1 ? 'y' : 'ies'} from local storage.`);
+</script>
+
+</body>
+</html>
