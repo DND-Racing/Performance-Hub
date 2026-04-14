@@ -496,6 +496,29 @@ function fmt(n, digits = 2){
   return Number(n).toFixed(digits);
 }
 
+function ensureStatusEl(){
+  let status = el("status");
+  if (!status){
+    status = document.createElement("div");
+    status.id = "status";
+    status.className = "status";
+    status.style.margin = "12px 16px";
+    const wrap = document.querySelector(".wrap");
+    if (wrap && wrap.parentNode){
+      wrap.parentNode.insertBefore(status, wrap);
+    } else {
+      document.body.appendChild(status);
+    }
+  }
+  return status;
+}
+
+function showStatus(message, isError = false){
+  const status = ensureStatusEl();
+  status.textContent = message;
+  status.style.color = isError ? "#ff8a8a" : "";
+}
+
 function getCornerStats(){
   const wt_lf = numVal("wt_lf");
   const wt_rf = numVal("wt_rf");
@@ -658,46 +681,55 @@ function safeName(s){
     .replace(/[^a-zA-Z0-9_\-]/g, "");
 }
 
+function buildCurrentSetupCSV(){
+  const d = getDataAsStrings();
+  const stats = calcStatsForSave(d);
+
+  d.total_wt = stats.total_wt;
+  d.left_pct = stats.left_pct;
+  d.rear_pct = stats.rear_pct;
+  d.cross_pct = stats.cross_pct;
+  d.wedge_lb = stats.wedge_lb;
+
+  const header = saveColumns.join(",");
+  const row = toCSVRow(saveColumns.map(c => d[c] ?? ""));
+  const csv = header + "\n" + row + "\n";
+
+  return { d, csv };
+}
+
+function getSetupFileName(data){
+  const date = safeName(data.date) || "no-date";
+  const track = safeName(data.track) || "no-track";
+  const sess = safeName(data.session) || "no-session";
+  const car = safeName(data.car) || "no-car";
+  return `${date}__${track}__${sess}__${car}_Setup.csv`;
+}
+
+function downloadBlob(blob, fileName){
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(blob);
+  a.href = url;
+  a.download = fileName;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 function save(){
-  const status = el("status");
-
   try{
-    if (status) status.textContent = "Preparing CSV...";
+    showStatus("Preparing CSV...");
 
-    const d = getDataAsStrings();
-    const stats = calcStatsForSave(d);
-
-    d.total_wt = stats.total_wt;
-    d.left_pct = stats.left_pct;
-    d.rear_pct = stats.rear_pct;
-    d.cross_pct = stats.cross_pct;
-    d.wedge_lb = stats.wedge_lb;
-
-    const header = saveColumns.join(",");
-    const row = toCSVRow(saveColumns.map(c => d[c] ?? ""));
-    const csv = header + "\n" + row + "\n";
-
+    const { d, csv } = buildCurrentSetupCSV();
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const filename = getSetupFileName(d);
 
-    const date = safeName(d.date) || "no-date";
-    const track = safeName(d.track) || "no-track";
-    const sess = safeName(d.session) || "no-session";
-    const car = safeName(d.car) || "no-car";
-    const filename = `${date}__${track}__${sess}__${car}_Setup.csv`;
-
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
-
-    if (status) status.textContent = `CSV downloaded: ${filename}`;
+    downloadBlob(blob, filename);
+    showStatus(`CSV downloaded: ${filename}`);
   } catch (err){
     console.error(err);
-    if (status) status.textContent = "Save failed: " + (err?.message || err);
+    showStatus("Save failed: " + (err?.message || err), true);
   }
 }
 
@@ -753,17 +785,95 @@ function handleCSVLoad(event) {
 
   reader.onload = function(e) {
     const text = e.target.result;
-
-    // 👉 call your existing load function here
     loadCSV(text);
   };
 
   reader.readAsText(file);
 }
-  
+
 function openCSVPicker(){
   el("csvLoader").value = "";
   el("csvLoader").click();
+}
+
+function loadCSV(text){
+  try{
+    if (!text || !text.trim()){
+      showStatus("Load failed: CSV file is empty.", true);
+      return;
+    }
+
+    const lines = text
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .split("\n")
+      .filter(line => line.trim() !== "");
+
+    if (lines.length < 2){
+      showStatus("Load failed: CSV needs a header row and a data row.", true);
+      return;
+    }
+
+    const headers = parseCSVLine(lines[0]).map(h => h.trim());
+    const values  = parseCSVLine(lines[1]);
+
+    const obj = {};
+    headers.forEach((header, i) => {
+      obj[header] = values[i] ?? "";
+    });
+
+    setDataFromObject(obj);
+    showStatus("CSV loaded successfully.");
+  } catch (err){
+    console.error(err);
+    showStatus("Load failed: " + (err?.message || err), true);
+  }
+}
+
+async function emailFilteredCSV() {
+  try {
+    const { d, csv } = buildCurrentSetupCSV();
+    const fileName = getSetupFileName(d);
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const file = new File([blob], fileName, { type: "text/csv" });
+
+    const subject = "Chassis Setup Export";
+    const body = "Attached is the chassis setup export.";
+
+    if (navigator.share && navigator.canShare) {
+      const canShareFile = navigator.canShare({ files: [file] });
+
+      if (canShareFile) {
+        try {
+          await navigator.share({
+            title: subject,
+            text: body,
+            files: [file]
+          });
+          showStatus("Share sheet opened. Choose your mail app to send the CSV.");
+          return;
+        } catch (error) {
+          if (error && error.name === "AbortError") {
+            showStatus("Share canceled.", true);
+            return;
+          }
+          console.warn("Web Share failed, using fallback.", error);
+        }
+      }
+    }
+
+    downloadBlob(blob, fileName);
+
+    const mailto =
+      `mailto:?subject=${encodeURIComponent(subject)}` +
+      `&body=${encodeURIComponent(body + "\n\nThe CSV has been downloaded. Attach it to this email before sending.")}`;
+
+    window.location.href = mailto;
+    showStatus("CSV downloaded and mail app opened. Attach the downloaded CSV to send it.");
+  } catch (err) {
+    console.error(err);
+    showStatus("Share failed: " + (err?.message || err), true);
+  }
 }
 
 el("date").valueAsDate = new Date();
@@ -785,85 +895,9 @@ el("date").valueAsDate = new Date();
   }
 });
 
+ensureStatusEl();
 updateStatsLive();
 computeAdjustments();
-  
-function loadCSV(text){
-  const status = el("status");
-
-  try{
-    if (!text || !text.trim()){
-      if (status) status.textContent = "Load failed: CSV file is empty.";
-      return;
-    }
-
-    const lines = text
-      .replace(/\r\n/g, "\n")
-      .replace(/\r/g, "\n")
-      .split("\n")
-      .filter(line => line.trim() !== "");
-
-    if (lines.length < 2){
-      if (status) status.textContent = "Load failed: CSV needs a header row and a data row.";
-      return;
-    }
-
-    const headers = parseCSVLine(lines[0]).map(h => h.trim());
-    const values  = parseCSVLine(lines[1]);
-
-    const obj = {};
-    headers.forEach((header, i) => {
-      obj[header] = values[i] ?? "";
-    });
-
-    setDataFromObject(obj);
-
-    if (status) status.textContent = "CSV loaded successfully.";
-  } catch (err){
-    console.error(err);
-    if (status) status.textContent = "Load failed: " + (err?.message || err);
-  }
-}  
-  async function emailFilteredCSV() {
-      const filteredLog = getFilteredLog();
-
-      if (!filteredLog.length) {
-        showStatus('There are no filtered log entries to email.', true);
-        return;
-      }
-
-      const fileName = getExportFileName();
-      const blob = createCSVBlob(filteredLog);
-      const file = new File([blob], fileName, { type: 'text/csv' });
-      const subject = 'Tool Checklist Log Export';
-      const body = [
-        'Attached is the Chassis Setup export.',
-        
-      ].join('\n');
-
-      if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-        try {
-          await navigator.share({
-            title: subject,
-            text: body,
-            files: [file]
-          });
-          showStatus('Share sheet opened. Choose your mail app to send the CSV.');
-          return;
-        } catch (error) {
-          if (error && error.name === 'AbortError') {
-            showStatus('Email export canceled.', true);
-            return;
-          }
-        }
-      }
-
-      downloadBlob(blob, fileName);
-      const mailto = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body + '\n\nThe CSV file has been downloaded. Attach it to this email before sending.')}`;
-      window.location.href = mailto;
-      showStatus('CSV downloaded and mail app opened. Attach the downloaded CSV to send it.');
-    }
-
 </script>
 </body>
 </html>
