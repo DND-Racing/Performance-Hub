@@ -144,12 +144,27 @@
     <div class="title"><h2>Event</h2><span class="pill">Overview</span></div>
     <div class="row cols2">
       <div><label>Date</label><input id="event_date" type="date"></div>
-      <div><label>Weather</label>
-        <select id="event_weather">
-          <option value="">Select...</option>
-          <option>Cloudy</option><option>Clear</option><option>Overcast</option>
-        </select>
-      </div>
+      <div>
+  <label>Weather</label>
+  <select id="event_weather">
+    <option value="">Select...</option>
+    <option>Clear</option>
+    <option>Partly Cloudy</option>
+    <option>Cloudy</option>
+    <option>Overcast</option>
+    <option>Rain</option>
+    <option>Showers</option>
+    <option>Thunderstorm</option>
+    <option>Fog</option>
+    <option>Snow</option>
+    <option>Windy</option>
+  </select>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+    <button class="btn2" type="button" id="weatherBtn">Use Local Weather</button>
+    <button class="btn3" type="button" id="weatherTrackBtn">Use Track Weather</button>
+  </div>
+  <div id="weather_meta" class="status" style="margin-top:8px;">Weather not loaded.</div>
+</div>
       <div><label>Track</label><input id="event_track" placeholder="Merrittville / Ohsweken / Ransomville / etc."></div>
       <div><label>Car</label><input id="event_car" placeholder="Chassis #"></div>
     </div>
@@ -556,6 +571,192 @@
   }
   updateAllDeltas();
   setStatus("Ready.");
+
+  const TRACK_COORDS = {
+    "merrittville": { lat: 43.0917, lon: -79.2216, label: "Merrittville Speedway" },
+    "ohsweken": { lat: 43.0716, lon: -80.1194, label: "Ohsweken Speedway" },
+    "ransomville": { lat: 43.2387, lon: -78.9097, label: "Ransomville Speedway" }
+  };
+
+  function weatherCodeToLabel(code, windKmh = 0) {
+    if (windKmh >= 35) return "Windy";
+
+    const map = {
+      0: "Clear",
+      1: "Partly Cloudy",
+      2: "Cloudy",
+      3: "Overcast",
+      45: "Fog",
+      48: "Fog",
+      51: "Showers",
+      53: "Showers",
+      55: "Showers",
+      56: "Showers",
+      57: "Showers",
+      61: "Rain",
+      63: "Rain",
+      65: "Rain",
+      66: "Rain",
+      67: "Rain",
+      71: "Snow",
+      73: "Snow",
+      75: "Snow",
+      77: "Snow",
+      80: "Showers",
+      81: "Showers",
+      82: "Showers",
+      85: "Snow",
+      86: "Snow",
+      95: "Thunderstorm",
+      96: "Thunderstorm",
+      99: "Thunderstorm"
+    };
+
+    return map[code] || "Cloudy";
+  }
+
+  function setWeatherMeta(text, kind = "") {
+    const node = el("weather_meta");
+    if (!node) return;
+    node.textContent = text;
+    node.className = kind ? `status ${kind}` : "status";
+  }
+
+  function findTrackCoords(trackName) {
+    const raw = String(trackName || "").trim().toLowerCase();
+    if (!raw) return null;
+
+    for (const key of Object.keys(TRACK_COORDS)) {
+      if (raw.includes(key)) return TRACK_COORDS[key];
+    }
+    return null;
+  }
+
+  async function fetchWeatherByCoords(lat, lon, sourceLabel = "Current Location") {
+    try {
+      setWeatherMeta("Loading weather...");
+
+      const url =
+        `https://api.open-meteo.com/v1/forecast` +
+        `?latitude=${encodeURIComponent(lat)}` +
+        `&longitude=${encodeURIComponent(lon)}` +
+        `&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,wind_speed_10m` +
+        `&temperature_unit=celsius&wind_speed_unit=kmh&precipitation_unit=mm`;
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Weather request failed (${res.status})`);
+
+      const data = await res.json();
+      const current = data.current;
+      if (!current) throw new Error("No current weather returned.");
+
+      const weatherLabel = weatherCodeToLabel(current.weather_code, current.wind_speed_10m);
+      const weatherSelect = el("event_weather");
+      if (weatherSelect) weatherSelect.value = weatherLabel;
+
+      const summary =
+        `${sourceLabel}: ${weatherLabel}, ${current.temperature_2m}°C, ` +
+        `Feels ${current.apparent_temperature}°C, Wind ${current.wind_speed_10m} km/h, ` +
+        `Humidity ${current.relative_humidity_2m}%, Precip ${current.precipitation} mm`;
+
+      setWeatherMeta(summary, "good");
+
+      const notes = el("event_notes");
+      if (notes) {
+        const line = `[Auto Weather] ${summary}`;
+        const alreadyHasAutoWeather = notes.value.includes("[Auto Weather]");
+        if (!alreadyHasAutoWeather) {
+          notes.value = notes.value ? `${line}\n\n${notes.value}` : line;
+        }
+      }
+
+      setStatus("Weather loaded.", "good");
+    } catch (err) {
+      console.error(err);
+      setWeatherMeta(`Weather load failed: ${err?.message || err}`, "bad");
+      setStatus(`Weather load failed: ${err?.message || err}`, "bad");
+    }
+  }
+
+  function loadWeatherFromBrowserLocation() {
+    if (!navigator.geolocation) {
+      setWeatherMeta("Geolocation not supported by this browser.", "bad");
+      setStatus("Geolocation not supported.", "bad");
+      return;
+    }
+
+    setWeatherMeta("Requesting location permission...");
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        fetchWeatherByCoords(latitude, longitude, "Current Location");
+      },
+      (error) => {
+        const messages = {
+          1: "Location permission denied.",
+          2: "Location unavailable.",
+          3: "Location request timed out."
+        };
+        const msg = messages[error.code] || error.message || "Unable to get location.";
+        setWeatherMeta(msg, "bad");
+        setStatus(msg, "bad");
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 12000,
+        maximumAge: 300000
+      }
+    );
+  }
+
+  function loadWeatherFromTrack() {
+    const track = el("event_track")?.value || "";
+    const found = findTrackCoords(track);
+
+    if (!found) {
+      setWeatherMeta("Track not recognized. Use local weather or add track coordinates.", "bad");
+      setStatus("Track weather unavailable for this track name.", "bad");
+      return;
+    }
+
+    fetchWeatherByCoords(found.lat, found.lon, found.label);
+  }
+
+  function autoLoadWeatherOnPageOpen() {
+    const trackValue = el("event_track")?.value?.trim();
+    if (trackValue) {
+      const found = findTrackCoords(trackValue);
+      if (found) {
+        fetchWeatherByCoords(found.lat, found.lon, found.label);
+        return;
+      }
+    }
+    loadWeatherFromBrowserLocation();
+  }
+
+  const weatherBtn = el("weatherBtn");
+  const weatherTrackBtn = el("weatherTrackBtn");
+
+  if (weatherBtn) weatherBtn.addEventListener("click", loadWeatherFromBrowserLocation);
+  if (weatherTrackBtn) weatherTrackBtn.addEventListener("click", loadWeatherFromTrack);
+
+  // Optional: auto refresh weather when track changes
+  const trackInput = el("event_track");
+  if (trackInput) {
+    trackInput.addEventListener("change", () => {
+      const found = findTrackCoords(trackInput.value);
+      if (found) {
+        fetchWeatherByCoords(found.lat, found.lon, found.label);
+      }
+    });
+  }
+
+  // Auto load weather on startup
+  window.addEventListener("load", () => {
+    setTimeout(autoLoadWeatherOnPageOpen, 400);
+  });
+
 </script>
 </body>
 </html>
